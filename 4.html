@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Namma Ooru | ನಮ್ಮ ಊರು</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --saffron: #E87722;
+            --saffron-light: #FFF3E8;
+            --green: #2E7D32;
+            --green-light: #E8F5E9;
+            --red: #C62828;
+            --blue: #1565C0;
+            --text-dark: #1A1A1A;
+            --text-mid: #444;
+            --text-light: #777;
+            --border: #E0E0E0;
+            --bg: #F8F5F0;
+            --shadow: 0 2px 8px rgba(0, 0, 0, .10);
+            --r: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* SCREENS */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* LANGUAGE SCREEN */
+        #s-lang {
+            background: linear-gradient(160deg, #FFF8F0, #F0F8F0);
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+        }
+
+        .lg-icon {
+            font-size: 64px;
+            display: block;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .lg-title {
+            font-size: 30px;
+            font-weight: 700;
+            color: var(--saffron);
+            text-align: center;
+        }
+
+        .lg-title2 {
+            font-size: 22px;
+            color: var(--green);
+            text-align: center;
+            margin-top: 4px;
+            margin-bottom: 32px;
+        }
+
+        .lang-sub {
+            text-align: center;
+            color: var(--text-mid);
+            margin-bottom: 26px;
+            font-size: 15px;
+        }
+
+        .lang-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 14px;
+            padding: 18px 20px;
+            border: 2px solid var(--saffron);
+            border-radius: var(--r);
+            background: #fff;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--saffron);
+            text-align: center;
+            transition: all .2s;
+        }
+
+        .lang-btn:hover,
+        .lang-btn:active {
+            background: var(--saffron);
+            color: #fff;
+        }
+
+        .lang-btn small {
+            display: block;
+            font-size: 13px;
+            font-weight: 400;
+            opacity: .8;
+            margin-top: 3px;
+        }
+
+        /* PHONE SCREEN */
+        #s-phone {
+            background: linear-gradient(160deg, #FFF8F0, #F0F8F0);
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+
+        .phone-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 22px;
+            width: 100%;
+            max-width: 370px;
+            box-shadow: var(--shadow);
+        }
+
+        .pb-icon {
+            font-size: 44px;
+            display: block;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .pb-h {
+            font-size: 21px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pb-p {
+            color: var(--text-light);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .inp {
+            width: 100%;
+            padding: 13px 14px;
+            border: 2px solid var(--border);
+            border-radius: var(--r);
+            font-size: 15px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .inp:focus {
+            border-color: var(--saffron);
+        }
+
+        .btn-p {
+            width: 100%;
+            padding: 14px;
+            background: var(--saffron);
+            color: #fff;
+            border: none;
+            border-radius: var(--r);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            font-family: inherit;
+        }
+
+        .btn-p:active {
+            background: #c96415;
+        }
+
+        .btn-o {
+            width: 100%;
+            padding: 12px;
+            background: #fff;
+            color: var(--saffron);
+            border: 2px solid var(--saffron);
+            border-radius: var(--r);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            font-family: inherit;
+        }
+
+        /* APP */
+        #s-app {
+            background: var(--bg);
+        }
+
+        .app-hdr {
+            background: var(--saffron);
+            color: #fff;
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, .2);
+        }
+
+        .hdr-logo {
+            flex: 1;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .hdr-logo small {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: .85;
+        }
+
+        .hbtn {
+            background: rgba(255, 255, 255, .22);
+            border: none;
+            color: #fff;
+            padding: 7px 10px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .hbtn:active {
+            background: rgba(255, 255, 255, .38);
+        }
+
+        .loc-bar {
+            background: var(--green);
+            color: #fff;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .loc-txt {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .loc-sb {
+            background: rgba(255, 255, 255, .2);
+            border: 1px solid rgba(255, 255, 255, .4);
+            color: #fff;
+            padding: 4px 9px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .emg-strip {
+            background: #FFF3E8;
+            border-bottom: 2px solid #FFCC80;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .emg-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .emg-title-lbl {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--red);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .emg-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--red);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 55px;
+            z-index: 90;
+        }
+
+        .tb {
+            flex: 1;
+            padding: 10px 2px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all .15s;
+        }
+
+        .tb.on {
+            color: var(--saffron);
+            border-bottom-color: var(--saffron);
+            font-weight: 700;
+        }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+
+        .pane {
+            display: none;
+            padding: 14px;
+        }
+
+        .pane.on {
+            display: block;
+        }
+
+        /* SEARCH */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 2px solid var(--border);
+            border-radius: var(--r);
+            font-size: 14px;
+            outline: none;
+            background: #fff;
+            font-family: inherit;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--saffron);
+        }
+
+        .s-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 17px;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .cat-row {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 6px;
+        }
+
+        .cat-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            flex-shrink: 0;
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            background: #fff;
+            color: var(--text-mid);
+            transition: all .15s;
+        }
+
+        .chip.on {
+            background: var(--saffron);
+            color: #fff;
+            border-color: var(--saffron);
+        }
+
+        .res-count {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        /* SHOP CARD */
+        .shop-card {
+            background: #fff;
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            margin-bottom: 13px;
+            overflow: hidden;
+        }
+
+        .shop-img {
+            width: 100%;
+            height: 148px;
+            object-fit: cover;
+        }
+
+        .shop-ph {
+            width: 100%;
+            height: 148px;
+            background: linear-gradient(135deg, #FFE0B2, #FFF9C4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+        }
+
+        .shop-body {
+            padding: 12px 13px 13px;
+        }
+
+        .shop-name {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .shop-badge {
+            display: inline-block;
+            background: var(--green-light);
+            color: var(--green);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .shop-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .mrow {
+            display: flex;
+            align-items: flex-start;
+            gap: 7px;
+            font-size: 13px;
+            color: var(--text-mid);
+        }
+
+        .mrow .mi {
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .dist-lbl {
+            font-weight: 700;
+            color: var(--saffron);
+        }
+
+        .timing-lbl {
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .shop-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 11px;
+        }
+
+        .call-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: var(--green);
+            color: #fff;
+            padding: 11px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+
+        .map-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            background: var(--blue);
+            color: #fff;
+            padding: 11px 13px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .no-shops {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-light);
+        }
+
+        .no-shops .big {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* MAP */
+        #map-wrap {
+            height: calc(100vh - 195px);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: #e8e0d5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gmap {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .map-ph {
+            text-align: center;
+            padding: 24px;
+            color: var(--text-mid);
+            font-size: 14px;
+        }
+
+        .map-ph span {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* FORM */
+        .form-card {
+            background: #fff;
+            border-radius: var(--r);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--saffron);
+            border-bottom: 2px solid var(--saffron-light);
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+        }
+
+        .fg {
+            margin-bottom: 13px;
+        }
+
+        .fg label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-mid);
+            margin-bottom: 5px;
+        }
+
+        .fg input,
+        .fg select,
+        .fg textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .fg input:focus,
+        .fg select:focus,
+        .fg textarea:focus {
+            border-color: var(--saffron);
+        }
+
+        .fg textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .img-prev {
+            display: none;
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 8px;
+            max-height: 150px;
+            object-fit: cover;
+        }
+
+        .row2 {
+            display: flex;
+            gap: 8px;
+        }
+
+        .row2 input {
+            flex: 1;
+        }
+
+        .loc-det {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: var(--green-light);
+            color: var(--green);
+            border: 1.5px solid var(--green);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+
+        /* TIMING TABLE */
+        .t-table {
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .trow {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fff;
+            flex-wrap: wrap;
+        }
+
+        .trow:last-child {
+            border-bottom: none;
+        }
+
+        .trow.c-row {
+            background: #fafafa;
+        }
+
+        .day-lbl {
+            font-size: 12px;
+            font-weight: 700;
+            width: 30px;
+            flex-shrink: 0;
+        }
+
+        .day-lbl.sun {
+            color: var(--red);
+        }
+
+        .t-times {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .t-times input[type=time] {
+            flex: 1;
+            padding: 6px 7px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            min-width: 0;
+        }
+
+        .t-times input[type=time]:focus {
+            border-color: var(--saffron);
+        }
+
+        .t-sep {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .trow.c-row .t-times {
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        .closed-lbl {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--text-light);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .closed-lbl input {
+            accent-color: var(--red);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        .fb-ok {
+            background: var(--green-light);
+            color: var(--green);
+            padding: 13px;
+            border-radius: var(--r);
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: #222;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            transition: transform .25s;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ADMIN GATE */
+        .gate-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .gate-overlay.open {
+            display: flex;
+        }
+
+        .gate-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 22px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .gate-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--saffron);
+        }
+
+        .gate-box p {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 18px;
+        }
+
+        .gate-err {
+            font-size: 12px;
+            color: var(--red);
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .modal.open {
+            display: block;
+        }
+
+        .modal-inner {
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 18px 15px 48px;
+        }
+
+        .m-hdr {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-dark);
+        }
+
+        .m-hdr h2 {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .sm-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .sm-modal.open {
+            display: flex;
+        }
+
+        .sm-box {
+            background: #fff;
+            border-radius: 14px;
+            padding: 22px 18px;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .sm-box h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        /* ADMIN */
+        .adm-sec {
+            margin-bottom: 22px;
+        }
+
+        .adm-sec h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-mid);
+            padding: 8px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            background: var(--saffron-light);
+            color: var(--saffron);
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .emg-card {
+            background: #FFF8F0;
+            border: 1.5px solid #FFD0A0;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+
+        .emg-card-top {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--red);
+            margin-bottom: 6px;
+        }
+
+        .emg-card-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .emg-card-row input {
+            flex: 1;
+            padding: 9px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .emg-card-row input:focus {
+            border-color: var(--saffron);
+        }
+
+        .save-btn {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 9px 11px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .del-btn-s {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 9px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .emg-add {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .emg-add input {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 7px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .emg-add input:focus {
+            border-color: var(--saffron);
+        }
+
+        .emg-add button {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+        }
+
+        .adm-shop-row {
+            background: #fff;
+            border-radius: 8px;
+            padding: 11px 13px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adm-shop-row .asi {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .adm-shop-row .aname {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .adm-shop-row .asub {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .adm-shop-row .adm-del {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 7px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+
+        .fb-item {
+            background: #FFF8F0;
+            border-left: 4px solid var(--saffron);
+            padding: 10px 12px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .fb-item .fb-dt {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SCREEN 1: LANGUAGE ===== -->
+    <div class="screen active" id="s-lang">
+        <span class="lg-icon">🏘️</span>
+        <div class="lg-title">Namma Ooru</div>
+        <div class="lg-title2">ನಮ್ಮ ಊರು</div>
+        <p class="lang-sub">Choose your language / ನಿಮ್ಮ ಭಾಷೆ ಆರಿಸಿ</p>
+        <button class="lang-btn" onclick="chooseLang('en')">
+            🇬🇧 English <small>Continue in English</small>
+        </button>
+        <button class="lang-btn" onclick="chooseLang('kn')">
+            🇮🇳 ಕನ್ನಡ <small>ಕನ್ನಡದಲ್ಲಿ ಮುಂದುವರಿಸಿ</small>
+        </button>
+    </div>
+
+    <!-- ===== SCREEN 2: PHONE ===== -->
+    <div class="screen" id="s-phone">
+        <div class="phone-box">
+            <span class="pb-icon">📱</span>
+            <div class="pb-h" id="ph-h">Your Phone Number</div>
+            <p class="pb-p" id="ph-p">Enter your mobile number to get started.</p>
+            <input class="inp" type="tel" id="ph-inp" placeholder="Enter 10 digit number" maxlength="10">
+            <button class="btn-p" id="ph-cb" onclick="savePhone()">Continue →</button>
+            <button class="btn-o" id="ph-sb" onclick="skipPhone()">Skip for now</button>
+        </div>
+    </div>
+
+    <!-- ===== SCREEN 3: MAIN APP ===== -->
+    <div class="screen" id="s-app">
+
+        <div class="app-hdr">
+            <div class="hdr-logo">🏘️ Namma Ooru<small id="app-sub">Your local shop finder</small></div>
+            <button class="hbtn" onclick="switchTab('add')">➕ <span id="h-add-lbl">Add</span></button>
+            <button class="hbtn" onclick="openAdmin()">👤</button>
+        </div>
+
+        <div class="loc-bar">
+            <span>📍</span>
+            <span class="loc-txt" id="loc-txt">Getting location...</span>
+            <button class="loc-sb" onclick="refreshLoc()">🔄</button>
+            <button class="loc-sb" onclick="openLocModal()" id="loc-m-btn">✏️ Manual</button>
+        </div>
+
+        <div class="emg-strip" id="emg-strip"></div>
+
+        <div class="tabs">
+            <div class="tb on" id="tb-shops" onclick="switchTab('shops')"><span id="tl-shops">🏪 Shops</span></div>
+            <div class="tb" id="tb-map" onclick="switchTab('map')"><span id="tl-map">🗺️ Map</span></div>
+            <div class="tb" id="tb-add" onclick="switchTab('add')"><span id="tl-add">➕ Add</span></div>
+            <div class="tb" id="tb-feedback" onclick="switchTab('feedback')"><span id="tl-fb">💬 Feedback</span></div>
+        </div>
+
+        <div class="scroll-area">
+
+            <!-- SHOPS -->
+            <div class="pane on" id="p-shops">
+                <div class="search-wrap">
+                    <span class="s-icon">🔍</span>
+                    <input type="text" id="s-inp" placeholder="Search shops..." oninput="doFilter()">
+                </div>
+                <div class="cat-row" id="cat-row"></div>
+                <div class="res-count" id="res-count"></div>
+                <div id="shops-list">
+                    <div style="text-align:center;padding:40px;color:var(--text-light)">Loading...</div>
+                </div>
+            </div>
+
+            <!-- MAP -->
+            <div class="pane" id="p-map">
+                <div id="map-wrap">
+                    <div class="map-ph" id="map-ph">
+                        <span>🗺️</span>
+                        <strong id="map-msg">Map will load here</strong>
+                        <p style="font-size:12px;margin-top:8px;color:var(--text-light)">Add your Google Maps API key to
+                            enable</p>
+                        <p style="font-size:12px;margin-top:10px">Use 🗺️ button on shop cards for directions</p>
+                    </div>
+                    <div id="gmap"></div>
+                </div>
+            </div>
+
+            <!-- ADD SHOP -->
+            <div class="pane" id="p-add">
+                <div class="form-card">
+                    <h3 id="fh">🏪 Register Your Shop</h3>
+                    <div class="fg"><label id="fl-nm">Shop Name *</label><input type="text" id="fi-nm"
+                            placeholder="e.g. Raju Kirana Store"></div>
+                    <div class="fg">
+                        <label id="fl-ct">Category *</label>
+                        <select id="fi-ct" onchange="handleCatChange(this)">
+                            <option value="">-- Select Category --</option>
+                            <option>Grocery / ಕಿರಾಣಿ</option>
+                            <option>Stationery / ಸ್ಟೇಷನರಿ</option>
+                            <option>Medical / ಮೆಡಿಕಲ್</option>
+                            <option>Mobile Shop / ಮೊಬೈಲ್ ಅಂಗಡಿ</option>
+                            <option>Vegetables / ತರಕಾರಿ</option>
+                            <option>Bakery / ಬೇಕರಿ</option>
+                            <option>Tailoring / ಟೈಲರಿಂಗ್</option>
+                            <option>Hardware / ಹಾರ್ಡ್‌ವೇರ್</option>
+                            <option>Salon / ಸೆಲೂನ್</option>
+                            <option>Tea Stall / ಟೀ ಅಂಗಡಿ</option>
+                            <option>Vehicle Repair / ವಾಹನ ರಿಪೇರಿ</option>
+                            <option>Fertilizer / ಗೊಬ್ಬರ</option>
+                            <option>Hotel / ಹೋಟೆಲ್</option>
+                            <option>Other / ಇತರ</option>
+                            <option value="__custom__">✏️ Type my own category...</option>
+                        </select>
+                        <input type="text" id="fi-ct-custom" placeholder="e.g. Flower Shop / ಹೂ ಅಂಗಡಿ"
+                            style="display:none;margin-top:8px;width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:8px;font-size:14px;outline:none;font-family:inherit;"
+                            oninput="this.style.borderColor='var(--saffron)'"
+                            onfocus="this.style.borderColor='var(--saffron)'"
+                            onblur="this.style.borderColor='var(--border)'">
+                        <p class="hint" id="fi-ct-hint" style="display:none;">Type your shop category (e.g. Flower Shop,
+                            Juice Centre)</p>
+                    </div>
+                    <div class="fg"><label id="fl-ph">Phone Number *</label><input type="tel" id="fi-ph"
+                            placeholder="10 digit number" maxlength="10"></div>
+                    <div class="fg"><label id="fl-ad">Address</label><input type="text" id="fi-ad"
+                            placeholder="Village / Town, District"></div>
+                    <div class="fg">
+                        <label id="fl-tm">Shop Timings (Day by Day)</label>
+                        <div class="t-table" id="t-table"></div>
+                        <p class="hint" id="fl-tm-hint">Set open/close time each day. Check "Closed" for holidays.</p>
+                    </div>
+                    <div class="fg"><label id="fl-ex">Extra Details</label><textarea id="fi-ex"
+                            placeholder="Home delivery, UPI accepted, etc."></textarea></div>
+                    <div class="fg">
+                        <label id="fl-pt">Shop Photo</label>
+                        <input type="file" id="fi-pt" accept="image/*" onchange="prevImg(event)">
+                        <img id="img-prev" class="img-prev">
+                        <p class="hint" id="fl-pt-h">Upload a clear photo of your shop</p>
+                    </div>
+                    <div class="fg">
+                        <label id="fl-lc">Shop Location *</label>
+                        <div class="row2">
+                            <input type="number" id="fi-lat" placeholder="Latitude" step="any">
+                            <input type="number" id="fi-lng" placeholder="Longitude" step="any">
+                        </div>
+                        <button class="loc-det" onclick="autoLoc()">📍 <span id="fl-dtc">Use My Current
+                                Location</span></button>
+                        <p class="hint" id="fl-lc-h">Or type coordinates manually</p>
+                    </div>
+                    <button class="btn-p" id="f-sub-btn" onclick="submitShop()">✅ Submit Shop</button>
+                </div>
+            </div>
+
+            <!-- FEEDBACK -->
+            <div class="pane" id="p-feedback">
+                <div class="form-card">
+                    <h3 id="fb-h">💬 Feedback / Suggestions</h3>
+                    <p id="fb-d" style="font-size:13px;color:var(--text-light);margin-bottom:14px">Your feedback helps
+                        us improve!</p>
+                    <div class="fb-ok" id="fb-ok">✅ Thank you! Feedback submitted.</div>
+                    <div class="fg"><label id="fb-lbl">Your Message</label><textarea id="fb-msg" rows="5"
+                            placeholder="Write your message here..."></textarea></div>
+                    <button class="btn-p" id="fb-btn" onclick="submitFeedback()">Send Feedback</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== ADMIN MODAL ===== -->
+    <div class="modal" id="adm-modal">
+        <div class="modal-inner">
+            <div class="m-hdr">
+                <button class="back-btn" onclick="closeAdmin()">←</button>
+                <h2 id="adm-ttl">Admin Panel</h2>
+            </div>
+            <div id="adm-login" class="form-card">
+                <h3>🔐 Admin Login</h3>
+                <div class="fg">
+                    <label>Password</label>
+                    <input class="inp" type="password" id="adm-pw" placeholder="Enter password"
+                        onkeydown="if(event.key==='Enter')doLogin()">
+                </div>
+                <button class="btn-p" onclick="doLogin()">Login</button>
+            </div>
+            <div id="adm-dash" style="display:none;">
+                <div class="adm-sec">
+                    <h4>🚨 <span id="adm-emg-h">Emergency Numbers</span></h4>
+                    <div id="adm-emg-list"></div>
+                    <div class="emg-add">
+                        <input type="text" id="new-emg-name" placeholder="Name (e.g. Hospital)">
+                        <input type="text" id="new-emg-num" placeholder="Number" style="max-width:110px">
+                        <button onclick="addEmg()">➕ Add</button>
+                    </div>
+                </div>
+                <div class="adm-sec">
+                    <h4>🏪 <span id="adm-sh-h">All Shops</span> <span class="badge" id="adm-sh-cnt">0</span></h4>
+                    <div id="adm-sh-list"></div>
+                </div>
+                <div class="adm-sec">
+                    <h4>💬 <span id="adm-fb-h">Feedback</span> <span class="badge" id="adm-fb-cnt">0</span></h4>
+                    <div id="adm-fb-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== LOCATION MODAL ===== -->
+    <div class="sm-modal" id="loc-modal">
+        <div class="sm-box">
+            <h3>📍 Enter Location Manually</h3>
+            <div class="fg"><label>Latitude</label><input class="inp" type="number" id="ml-lat"
+                    placeholder="e.g. 12.2958" step="any"></div>
+            <div class="fg"><label>Longitude</label><input class="inp" type="number" id="ml-lng"
+                    placeholder="e.g. 76.6394" step="any"></div>
+            <p style="font-size:11px;color:var(--text-light);margin-bottom:12px">Tip: Long-press on Google Maps to get
+                your coordinates.</p>
+            <button class="btn-p" onclick="saveManualLoc()">Save Location</button>
+            <button class="btn-o" onclick="closeLoc()" style="margin-top:8px">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN GATE MODAL (for Add Shop tab) ===== -->
+    <div class="gate-overlay" id="gate-modal">
+        <div class="gate-box">
+            <h3>🔐 Admin Access Required</h3>
+            <p id="gate-msg">Only the admin can add or edit shop details. Please enter the admin password to continue.
+            </p>
+            <div class="fg">
+                <label
+                    style="font-size:12px;font-weight:600;color:var(--text-mid);display:block;margin-bottom:5px;">Password</label>
+                <input class="inp" type="password" id="gate-pw" placeholder="Enter admin password"
+                    onkeydown="if(event.key==='Enter')doGateLogin()">
+                <div class="gate-err" id="gate-err">❌ Wrong password. Try again.</div>
+            </div>
+            <button class="btn-p" style="margin-top:4px" onclick="doGateLogin()">🔓 Unlock</button>
+            <button class="btn-o" style="margin-top:8px" onclick="closeGate()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ===================== CONFIG =====================
+        var SUPABASE_URL = 'https://cbzptvhtfmaetsejvgba.supabase.co';
+        var SUPABASE_KEY = 'cbzptvhtfmaetsejvgba';
+        var GMAPS_KEY = 'YOUR_GOOGLE_MAPS_KEY';
+        var ADMIN_PASS = '123456';
+
+        // ===================== ADMIN SESSION =====================
+        var isAdminLoggedIn = false; // resets on page reload for security
+
+        // ===================== TRANSLATIONS =====================
+        var TR = {
+            en: {
+                appSub: 'Your local shop finder', addLbl: 'Add',
+                tShops: '🏪 Shops', tMap: '🗺️ Map', tAdd: '➕ Add', tFb: '💬 Feedback',
+                search: 'Search shops, category...',
+                noShops: 'No shops found', noShopsSub: 'Try a different search or category',
+                call: '📞 Call', mapBtn: '🗺️ Map',
+                fHead: '🏪 Register Your Shop',
+                flNm: 'Shop Name *', flCt: 'Category *', flPh: 'Phone Number *',
+                flAd: 'Address', flTm: 'Shop Timings (Day by Day)',
+                flTmH: 'Set open/close time. Check "Closed" for holidays.',
+                flEx: 'Extra Details', flPt: 'Shop Photo', flPtH: 'Upload a clear photo of your shop',
+                flLc: 'Shop Location *', flDtc: 'Use My Current Location', flLcH: 'Or type coordinates manually',
+                fSub: '✅ Submit Shop',
+                fbH: '💬 Feedback / Suggestions', fbD: 'Your feedback helps us improve!',
+                fbL: 'Your Message', fbBtn: 'Send Feedback', fbOk: '✅ Thank you! Feedback submitted.',
+                admTtl: 'Admin Panel', admEmgH: 'Emergency Numbers', admShH: 'All Shops', admFbH: 'Feedback',
+                phH: 'Your Phone Number', phP: 'Enter mobile number to get started. No login needed.',
+                phC: 'Continue →', phS: 'Skip for now',
+                dist: function (d) { return d < 1 ? (d * 1000).toFixed(0) + ' m away' : d.toFixed(1) + ' km away'; },
+                days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], cw: 'Closed'
+            },
+            kn: {
+                appSub: 'ನಿಮ್ಮ ಸ್ಥಳೀಯ ಅಂಗಡಿ ಹುಡುಕಾಟ', addLbl: 'ಸೇರಿಸಿ',
+                tShops: '🏪 ಅಂಗಡಿ', tMap: '🗺️ ನಕ್ಷೆ', tAdd: '➕ ಸೇರಿಸಿ', tFb: '💬 ಪ್ರತಿಕ್ರಿಯೆ',
+                search: 'ಅಂಗಡಿ ಹುಡುಕಿ...',
+                noShops: 'ಅಂಗಡಿ ಕಂಡಿಲ್ಲ', noShopsSub: 'ಬೇರೆ ವಿಷಯ ಪ್ರಯತ್ನಿಸಿ',
+                call: '📞 ಕರೆ ಮಾಡಿ', mapBtn: '🗺️ ನಕ್ಷೆ',
+                fHead: '🏪 ನಿಮ್ಮ ಅಂಗಡಿ ನೋಂದಣಿ',
+                flNm: 'ಅಂಗಡಿ ಹೆಸರು *', flCt: 'ವರ್ಗ *', flPh: 'ಫೋನ್ ನಂಬರ್ *',
+                flAd: 'ವಿಳಾಸ', flTm: 'ಅಂಗಡಿ ಸಮಯ (ಪ್ರತಿ ದಿನ)',
+                flTmH: 'ತೆರೆದ/ಮುಚ್ಚಿದ ಸಮಯ ಹೊಂದಿಸಿ. ರಜಾ ದಿನ "ಮುಚ್ಚಿದೆ" ಆರಿಸಿ.',
+                flEx: 'ಹೆಚ್ಚಿನ ಮಾಹಿತಿ', flPt: 'ಅಂಗಡಿ ಫೋಟೊ', flPtH: 'ಸ್ಪಷ್ಟ ಫೋಟೊ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+                flLc: 'ಅಂಗಡಿ ಸ್ಥಳ *', flDtc: 'ನನ್ನ ಪ್ರಸ್ತುತ ಸ್ಥಳ ಬಳಸಿ', flLcH: 'ಅಥವಾ ನಿರ್ದೇಶಾಂಕ ನಮೂದಿಸಿ',
+                fSub: '✅ ಅಂಗಡಿ ಸಲ್ಲಿಸಿ',
+                fbH: '💬 ಪ್ರತಿಕ್ರಿಯೆ / ಸಲಹೆ', fbD: 'ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಸಹಾಯ!',
+                fbL: 'ನಿಮ್ಮ ಸಂದೇಶ', fbBtn: 'ಪ್ರತಿಕ್ರಿಯೆ ಕಳಿಸಿ', fbOk: '✅ ಧನ್ಯವಾದ! ಸ್ವೀಕರಿಸಲಾಗಿದೆ.',
+                admTtl: 'ಆಡಳಿತ ಫಲಕ', admEmgH: 'ತುರ್ತು ಸಂಖ್ಯೆಗಳು', admShH: 'ಎಲ್ಲ ಅಂಗಡಿಗಳು', admFbH: 'ಪ್ರತಿಕ್ರಿಯೆ',
+                phH: 'ನಿಮ್ಮ ಫೋನ್ ನಂಬರ್', phP: 'ಮೊಬೈಲ್ ನಂಬರ್ ನಮೂದಿಸಿ. ಖಾತೆ ಅಗತ್ಯವಿಲ್ಲ.',
+                phC: 'ಮುಂದುವರಿಸಿ →', phS: 'ಇದೀಗ ಬಿಟ್ಟುಬಿಡಿ',
+                dist: function (d) { return d < 1 ? (d * 1000).toFixed(0) + ' ಮೀ ದೂರ' : d.toFixed(1) + ' ಕಿಮಿ ದೂರ'; },
+                days: ['ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ', 'ರವಿ'], cw: 'ಮುಚ್ಚಿದೆ'
+            }
+        };
+
+        // ===================== STATE =====================
+        var lang = localStorage.getItem('no_lang') || null;
+        var uLat = null, uLng = null;
+        var shopList = JSON.parse(localStorage.getItem('no_shops') || 'null');
+        var emgList = JSON.parse(localStorage.getItem('no_emg') || 'null');
+        var fbList = JSON.parse(localStorage.getItem('no_fb') || '[]');
+        var filteredShops = [];
+        var activeCat = 'All';
+        var gmapLoaded = false, gmap = null;
+
+        // Seed demo data
+        if (!shopList) {
+            shopList = [
+                { id: 'd1', shop_name: 'Raju Kirana Store', category: 'Grocery / ಕಿರಾಣಿ', phone: '9876543210', address: 'Main Road, Hunsur', latitude: 12.3049, longitude: 76.2937, image_url: '', shop_timings: 'Mon: 07:00-21:00 | Sun: Closed', extra_details: 'Home delivery available' },
+                { id: 'd2', shop_name: 'Sri Sai Medical', category: 'Medical / ಮೆಡಿಕಲ್', phone: '9845678901', address: 'Bus Stand Road, Hunsur', latitude: 12.3065, longitude: 76.2955, image_url: '', shop_timings: 'Mon: 08:00-22:00 | Sun: 10:00-18:00', extra_details: 'Doctor 6–8 PM' },
+                { id: 'd3', shop_name: 'Ganesh Stationery', category: 'Stationery / ಸ್ಟೇಷನರಿ', phone: '9731234567', address: 'School Road, Hunsur', latitude: 12.3030, longitude: 76.2920, image_url: '', shop_timings: 'Mon: 09:00-19:00 | Sun: Closed', extra_details: 'Xerox & printing' },
+                { id: 'd4', shop_name: 'Lakshmi Mobile', category: 'Mobile Shop / ಮೊಬೈಲ್ ಅಂಗಡಿ', phone: '9900112233', address: 'Market Road, Hunsur', latitude: 12.3080, longitude: 76.2975, image_url: '', shop_timings: 'Mon: 10:00-20:00 | Sun: Closed', extra_details: 'All repairs' },
+                { id: 'd5', shop_name: 'Basaveshwara Vegetables', category: 'Vegetables / ತರಕಾರಿ', phone: '9632145870', address: 'Near Temple, Hunsur', latitude: 12.3010, longitude: 76.2900, image_url: '', shop_timings: 'Mon: 06:00-11:00 | Sun: 06:00-10:00', extra_details: 'Fresh daily' }
+            ];
+            localStorage.setItem('no_shops', JSON.stringify(shopList));
+        }
+        if (!emgList) {
+            emgList = [{ name: 'Ambulance', number: '108' }, { name: 'Police', number: '100' }, { name: 'Fire', number: '101' }];
+            localStorage.setItem('no_emg', JSON.stringify(emgList));
+        }
+
+        // ===================== BOOT =====================
+        window.onload = function () {
+            if (lang) {
+                var ph = localStorage.getItem('no_phone');
+                var sk = localStorage.getItem('no_phone_sk');
+                if (ph || sk) { bootApp(); }
+                else { showPhoneScreen(); }
+            }
+        };
+
+        function chooseLang(l) {
+            lang = l;
+            localStorage.setItem('no_lang', l);
+            var ph = localStorage.getItem('no_phone');
+            var sk = localStorage.getItem('no_phone_sk');
+            if (ph || sk) { bootApp(); }
+            else { showPhoneScreen(); }
+        }
+
+        function showPhoneScreen() {
+            document.getElementById('s-lang').classList.remove('active');
+            document.getElementById('s-phone').classList.add('active');
+            var t = TR[lang];
+            setText('ph-h', t.phH);
+            setText('ph-p', t.phP);
+            setText('ph-cb', t.phC);
+            setText('ph-sb', t.phS);
+            document.getElementById('ph-inp').placeholder = lang === 'kn' ? '10 ಅಂಕಿ ನಮೂದಿಸಿ' : 'Enter 10 digit number';
+        }
+
+        function savePhone() {
+            var v = document.getElementById('ph-inp').value.trim();
+            if (v.length < 10) { alert(lang === 'kn' ? '10 ಅಂಕಿ ನಮೂದಿಸಿ' : 'Enter 10 digit number'); return; }
+            localStorage.setItem('no_phone', v);
+            bootApp();
+        }
+
+        function skipPhone() {
+            localStorage.setItem('no_phone_sk', '1');
+            bootApp();
+        }
+
+        function bootApp() {
+            document.getElementById('s-lang').classList.remove('active');
+            document.getElementById('s-phone').classList.remove('active');
+            document.getElementById('s-app').classList.add('active');
+            applyLang();
+            buildTimingTable();
+            renderEmg();
+            renderCats();
+            doFilter();
+            detectGPS();
+        }
+
+        // ===================== HELPERS =====================
+        function setText(id, txt) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = txt;
+        }
+
+        // ===================== APPLY LANGUAGE =====================
+        function applyLang() {
+            var t = TR[lang];
+            setText('app-sub', t.appSub);
+            setText('h-add-lbl', t.addLbl);
+            setText('tl-shops', t.tShops);
+            setText('tl-map', t.tMap);
+            setText('tl-add', t.tAdd);
+            setText('tl-fb', t.tFb);
+            document.getElementById('s-inp').placeholder = t.search;
+            setText('fh', t.fHead);
+            setText('fl-nm', t.flNm); setText('fl-ct', t.flCt); setText('fl-ph', t.flPh);
+            setText('fl-ad', t.flAd); setText('fl-tm', t.flTm); setText('fl-tm-hint', t.flTmH);
+            setText('fl-ex', t.flEx); setText('fl-pt', t.flPt); setText('fl-pt-h', t.flPtH);
+            setText('fl-lc', t.flLc); setText('fl-dtc', t.flDtc); setText('fl-lc-h', t.flLcH);
+            setText('f-sub-btn', t.fSub);
+            setText('fb-h', t.fbH); setText('fb-d', t.fbD); setText('fb-lbl', t.fbL); setText('fb-btn', t.fbBtn);
+            setText('adm-ttl', t.admTtl);
+            setText('adm-emg-h', t.admEmgH); setText('adm-sh-h', t.admShH); setText('adm-fb-h', t.admFbH);
+        }
+
+        // ===================== TABS =====================
+        function switchTab(name) {
+            // Gate the 'add' tab — only admin can access it
+            if (name === 'add' && !isAdminLoggedIn) {
+                openGate();
+                return;
+            }
+            var names = ['shops', 'map', 'add', 'feedback'];
+            for (var i = 0; i < names.length; i++) {
+                document.getElementById('tb-' + names[i]).classList.remove('on');
+                document.getElementById('p-' + names[i]).classList.remove('on');
+            }
+            document.getElementById('tb-' + name).classList.add('on');
+            document.getElementById('p-' + name).classList.add('on');
+            if (name === 'map' && !gmapLoaded) initMap();
+        }
+
+        // ===================== ADMIN GATE =====================
+        function openGate() {
+            document.getElementById('gate-pw').value = '';
+            document.getElementById('gate-err').style.display = 'none';
+            var msg = document.getElementById('gate-msg');
+            msg.textContent = lang === 'kn'
+                ? 'ಅಂಗಡಿ ವಿವರ ಸೇರಿಸಲು ಅಥವಾ ಸಂಪಾದಿಸಲು ನಿರ್ವಾಹಕ ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯ.'
+                : 'Only the admin can add or edit shop details. Please enter the admin password to continue.';
+            document.getElementById('gate-modal').classList.add('open');
+            setTimeout(function () { document.getElementById('gate-pw').focus(); }, 200);
+        }
+
+        function closeGate() {
+            document.getElementById('gate-modal').classList.remove('open');
+        }
+
+        function doGateLogin() {
+            var pw = document.getElementById('gate-pw').value;
+            if (pw !== ADMIN_PASS) {
+                document.getElementById('gate-err').style.display = 'block';
+                document.getElementById('gate-pw').value = '';
+                document.getElementById('gate-pw').focus();
+                return;
+            }
+            isAdminLoggedIn = true;
+            closeGate();
+            showToast(lang === 'kn' ? '✅ ನಿರ್ವಾಹಕ ಪ್ರವೇಶ ನೀಡಲಾಗಿದೆ' : '✅ Admin access granted');
+            // Now actually switch to the add tab
+            var names = ['shops', 'map', 'add', 'feedback'];
+            for (var i = 0; i < names.length; i++) {
+                document.getElementById('tb-' + names[i]).classList.remove('on');
+                document.getElementById('p-' + names[i]).classList.remove('on');
+            }
+            document.getElementById('tb-add').classList.add('on');
+            document.getElementById('p-add').classList.add('on');
+        }
+
+        // ===================== GPS =====================
+        function detectGPS() {
+            setText('loc-txt', lang === 'kn' ? 'ಸ್ಥಳ ಪಡೆಯಲಾಗುತ್ತಿದೆ...' : 'Getting location...');
+            if (!navigator.geolocation) { setText('loc-txt', 'GPS not available'); return; }
+            navigator.geolocation.getCurrentPosition(
+                function (p) {
+                    uLat = p.coords.latitude; uLng = p.coords.longitude;
+                    setText('loc-txt', uLat.toFixed(4) + ', ' + uLng.toFixed(4));
+                    doFilter();
+                },
+                function () { setText('loc-txt', lang === 'kn' ? 'ಸ್ಥಳ ಅನುಮತಿ ಇಲ್ಲ' : 'Location access denied'); },
+                { enableHighAccuracy: true, timeout: 9000 }
+            );
+        }
+        function refreshLoc() { detectGPS(); }
+
+        function openLocModal() {
+            document.getElementById('ml-lat').value = uLat || '';
+            document.getElementById('ml-lng').value = uLng || '';
+            document.getElementById('loc-modal').classList.add('open');
+        }
+        function closeLoc() { document.getElementById('loc-modal').classList.remove('open'); }
+        function saveManualLoc() {
+            var la = parseFloat(document.getElementById('ml-lat').value);
+            var lo = parseFloat(document.getElementById('ml-lng').value);
+            if (isNaN(la) || isNaN(lo)) { showToast(lang === 'kn' ? 'ಸರಿಯಾದ ನಿರ್ದೇಶಾಂಕ ನಮೂದಿಸಿ' : 'Enter valid coordinates'); return; }
+            uLat = la; uLng = lo;
+            setText('loc-txt', la.toFixed(4) + ', ' + lo.toFixed(4));
+            closeLoc(); doFilter();
+        }
+
+        // ===================== EMERGENCY =====================
+        function renderEmg() {
+            var strip = document.getElementById('emg-strip');
+            if (!emgList.length) { strip.style.display = 'none'; return; }
+            strip.style.display = 'flex';
+            var html = '<span class="emg-title-lbl">🚨</span>';
+            for (var i = 0; i < emgList.length; i++) {
+                html += '<a class="emg-chip" href="tel:' + emgList[i].number + '">📞 ' + emgList[i].name + ': ' + emgList[i].number + '</a>';
+            }
+            strip.innerHTML = html;
+        }
+
+        // ===================== SHOP FILTER/RENDER =====================
+        function hdist(la1, lo1, la2, lo2) {
+            var R = 6371, dL = (la2 - la1) * Math.PI / 180, dLo = (lo2 - lo1) * Math.PI / 180;
+            var a = Math.sin(dL / 2) * Math.sin(dL / 2) + Math.cos(la1 * Math.PI / 180) * Math.cos(la2 * Math.PI / 180) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        function renderCats() {
+            var cats = ['All'];
+            for (var i = 0; i < shopList.length; i++) {
+                var c = shopList[i].category.split('/')[0].trim();
+                if (cats.indexOf(c) === -1) cats.push(c);
+            }
+            var html = '';
+            for (var j = 0; j < cats.length; j++) {
+                var lbl = cats[j] === 'All' ? (lang === 'kn' ? 'ಎಲ್ಲ' : 'All') : cats[j];
+                html += '<div class="chip' + (activeCat === cats[j] ? ' on' : '') + '" onclick="pickCat(\'' + cats[j].replace(/'/g, "\\'") + '\')">' + lbl + '</div>';
+            }
+            document.getElementById('cat-row').innerHTML = html;
+        }
+
+        function pickCat(c) { activeCat = c; renderCats(); doFilter(); }
+
+        function doFilter() {
+            var q = (document.getElementById('s-inp').value || '').toLowerCase();
+            var list = shopList.slice();
+            if (activeCat !== 'All') {
+                list = list.filter(function (s) { return s.category.toLowerCase().indexOf(activeCat.toLowerCase()) > -1; });
+            }
+            if (q) {
+                list = list.filter(function (s) {
+                    return s.shop_name.toLowerCase().indexOf(q) > -1 ||
+                        s.category.toLowerCase().indexOf(q) > -1 ||
+                        (s.address || '').toLowerCase().indexOf(q) > -1;
+                });
+            }
+            list = list.map(function (s) {
+                var d = (uLat && uLng && s.latitude && s.longitude) ? hdist(uLat, uLng, parseFloat(s.latitude), parseFloat(s.longitude)) : null;
+                return { s: s, d: d };
+            });
+            list.sort(function (a, b) { if (a.d === null) return 1; if (b.d === null) return -1; return a.d - b.d; });
+            filteredShops = list;
+            renderShops();
+        }
+
+        var EMOJIS = { Grocery: '🛒', Medical: '💊', Stationery: '📚', Mobile: '📱', Vegetables: '🥦', Bakery: '🍞', Hotel: '🍽️', Salon: '💈', Tea: '☕', Hardware: '🔧', Tailoring: '🧵', Vehicle: '🔧', Fertilizer: '🌾' };
+        function getEmoji(cat) {
+            var keys = Object.keys(EMOJIS);
+            for (var i = 0; i < keys.length; i++) { if (cat.toLowerCase().indexOf(keys[i].toLowerCase()) > -1) return EMOJIS[keys[i]]; }
+            return '🏪';
+        }
+
+        function renderShops() {
+            var t = TR[lang];
+            var el = document.getElementById('shops-list');
+            setText('res-count', filteredShops.length + (lang === 'kn' ? ' ಅಂಗಡಿಗಳು' : ' shops found'));
+            if (!filteredShops.length) {
+                el.innerHTML = '<div class="no-shops"><span class="big">🔍</span><strong>' + t.noShops + '</strong><p>' + t.noShopsSub + '</p></div>';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < filteredShops.length; i++) {
+                var s = filteredShops[i].s, d = filteredShops[i].d;
+                var distHtml = d !== null ? '<div class="mrow"><span class="mi">📍</span><span class="dist-lbl">' + t.dist(d) + '</span></div>' : '';
+                var imgHtml = s.image_url ? '<img class="shop-img" src="' + s.image_url + '" alt="' + s.shop_name + '" loading="lazy">' : '<div class="shop-ph">' + getEmoji(s.category) + '</div>';
+                var mapsUrl = 'https://www.google.com/maps/dir/?api=1' + (uLat ? '&origin=' + uLat + ',' + uLng : '') + '&destination=' + s.latitude + ',' + s.longitude;
+                var tmg = s.shop_timings ? '<div class="mrow"><span class="mi">🕐</span><span class="timing-lbl">' + s.shop_timings.split('|')[0].trim() + '</span></div>' : '';
+                var ext = s.extra_details ? '<div class="mrow"><span class="mi">ℹ️</span><span style="font-size:12px;color:var(--text-light)">' + s.extra_details + '</span></div>' : '';
+                var adr = s.address ? '<div class="mrow"><span class="mi">🏠</span>' + s.address + '</div>' : '';
+                html += '<div class="shop-card">' + imgHtml + '<div class="shop-body">' +
+                    '<div class="shop-name">' + s.shop_name + '</div>' +
+                    '<span class="shop-badge">' + s.category + '</span>' +
+                    '<div class="shop-meta">' + distHtml +
+                    '<div class="mrow"><span class="mi">📞</span>' + s.phone + '</div>' +
+                    adr + tmg + ext + '</div>' +
+                    '<div class="shop-actions">' +
+                    '<a href="tel:' + s.phone + '" class="call-btn">' + t.call + '</a>' +
+                    '<a href="' + mapsUrl + '" target="_blank" class="map-btn">' + t.mapBtn + '</a>' +
+                    '</div></div></div>';
+            }
+            el.innerHTML = html;
+        }
+
+        // ===================== TIMING TABLE =====================
+        function buildTimingTable() {
+            var t = TR[lang];
+            var html = '';
+            for (var i = 0; i < 7; i++) {
+                var isSun = (i === 6);
+                html += '<div class="trow' + (isSun ? ' c-row' : '') + '" id="trow' + i + '">' +
+                    '<span class="day-lbl' + (isSun ? ' sun' : '') + '">' + t.days[i] + '</span>' +
+                    '<div class="t-times">' +
+                    '<input type="time" id="to' + i + '" value="' + (isSun ? '' : '08:00') + '">' +
+                    '<span class="t-sep">→</span>' +
+                    '<input type="time" id="tc' + i + '" value="' + (isSun ? '' : '21:00') + '">' +
+                    '</div>' +
+                    '<label class="closed-lbl"><input type="checkbox" id="tk' + i + '" onchange="togClosed(' + i + ')"' + (isSun ? ' checked' : '') + '>' + t.cw + '</label>' +
+                    '</div>';
+            }
+            document.getElementById('t-table').innerHTML = html;
+        }
+
+        function togClosed(i) {
+            var row = document.getElementById('trow' + i);
+            if (document.getElementById('tk' + i).checked) row.classList.add('c-row');
+            else row.classList.remove('c-row');
+        }
+
+        function getTimings() {
+            var t = TR[lang], parts = [];
+            for (var i = 0; i < 7; i++) {
+                var ck = document.getElementById('tk' + i);
+                if (ck && ck.checked) {
+                    parts.push(t.days[i] + ': ' + t.cw);
+                } else {
+                    var op = document.getElementById('to' + i); var cl = document.getElementById('tc' + i);
+                    parts.push(t.days[i] + ': ' + (op ? op.value : '08:00') + ' - ' + (cl ? cl.value : '21:00'));
+                }
+            }
+            return parts.join(' | ');
+        }
+
+        // ===================== CATEGORY CUSTOM INPUT =====================
+        function handleCatChange(sel) {
+            var customInput = document.getElementById('fi-ct-custom');
+            var hint = document.getElementById('fi-ct-hint');
+            if (sel.value === '__custom__') {
+                customInput.style.display = 'block';
+                hint.style.display = 'block';
+                customInput.focus();
+            } else {
+                customInput.style.display = 'none';
+                hint.style.display = 'none';
+                customInput.value = '';
+            }
+        }
+
+        function getCategory() {
+            var sel = document.getElementById('fi-ct');
+            if (sel.value === '__custom__') {
+                return document.getElementById('fi-ct-custom').value.trim();
+            }
+            return sel.value;
+        }
+
+        // ===================== ADD SHOP =====================
+        function prevImg(e) {
+            var f = e.target.files[0]; if (!f) return;
+            var r = new FileReader();
+            r.onload = function (ev) { var im = document.getElementById('img-prev'); im.src = ev.target.result; im.style.display = 'block'; };
+            r.readAsDataURL(f);
+        }
+
+        function autoLoc() {
+            if (!navigator.geolocation) { showToast('GPS not available'); return; }
+            navigator.geolocation.getCurrentPosition(function (p) {
+                document.getElementById('fi-lat').value = p.coords.latitude.toFixed(6);
+                document.getElementById('fi-lng').value = p.coords.longitude.toFixed(6);
+                showToast(lang === 'kn' ? '✅ ಸ್ಥಳ ಪತ್ತೆಯಾಯಿತು' : '✅ Location detected');
+            }, function () { showToast('GPS error'); });
+        }
+
+        function submitShop() {
+            var nm = document.getElementById('fi-nm').value.trim();
+            var ct = getCategory();
+            var ph = document.getElementById('fi-ph').value.trim();
+            var ad = document.getElementById('fi-ad').value.trim();
+            var ex = document.getElementById('fi-ex').value.trim();
+            var lat = parseFloat(document.getElementById('fi-lat').value);
+            var lng = parseFloat(document.getElementById('fi-lng').value);
+            var tm = getTimings();
+
+            if (!nm || !ct || !ph || isNaN(lat) || isNaN(lng)) {
+                showToast(lang === 'kn' ? '⚠️ ಎಲ್ಲ ಕಡ್ಡಾಯ ಕ್ಷೇತ್ರ ತುಂಬಿ' : '⚠️ Fill all required fields');
+                return;
+            }
+            var im = document.getElementById('img-prev');
+            var shop = { id: 's' + Date.now(), shop_name: nm, category: ct, phone: ph, address: ad, latitude: lat, longitude: lng, image_url: (im.style.display !== 'none' ? im.src : ''), shop_timings: tm, extra_details: ex };
+            shopList.unshift(shop);
+            localStorage.setItem('no_shops', JSON.stringify(shopList));
+
+            // Reset
+            ['fi-nm', 'fi-ph', 'fi-ad', 'fi-ex', 'fi-lat', 'fi-lng'].forEach(function (id) { document.getElementById(id).value = ''; });
+            document.getElementById('fi-ct').value = '';
+            document.getElementById('fi-ct-custom').value = '';
+            document.getElementById('fi-ct-custom').style.display = 'none';
+            document.getElementById('fi-ct-hint').style.display = 'none';
+            document.getElementById('fi-pt').value = '';
+            im.style.display = 'none'; im.src = '';
+            buildTimingTable();
+            renderCats(); doFilter();
+            showToast(lang === 'kn' ? '✅ ಅಂಗಡಿ ಸೇರಿಸಲಾಯಿತು!' : '✅ Shop added!');
+            switchTab('shops');
+        }
+
+        // ===================== FEEDBACK =====================
+        function submitFeedback() {
+            var msg = document.getElementById('fb-msg').value.trim();
+            if (!msg) { showToast(lang === 'kn' ? 'ಸಂದೇಶ ಬರೆಯಿರಿ' : 'Please write a message'); return; }
+            fbList.unshift({ id: Date.now(), user_message: msg, created_at: new Date().toISOString() });
+            localStorage.setItem('no_fb', JSON.stringify(fbList));
+            document.getElementById('fb-msg').value = '';
+            var ok = document.getElementById('fb-ok');
+            ok.textContent = TR[lang].fbOk; ok.style.display = 'block';
+            setTimeout(function () { ok.style.display = 'none'; }, 4000);
+        }
+
+        // ===================== MAP =====================
+        function initMap() {
+            gmapLoaded = true;
+            if (GMAPS_KEY === 'YOUR_GOOGLE_MAPS_KEY') {
+                setText('map-msg', lang === 'kn' ? 'Google Maps API key ಸೇರಿಸಿ' : 'Add Google Maps API key in config');
+                return;
+            }
+            var sc = document.createElement('script');
+            sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + GMAPS_KEY + '&callback=onMapReady';
+            sc.async = true; sc.defer = true;
+            document.head.appendChild(sc);
+        }
+
+        window.onMapReady = function () {
+            var center = uLat ? { lat: uLat, lng: uLng } : { lat: 12.2958, lng: 76.6394 };
+            gmap = new google.maps.Map(document.getElementById('gmap'), { zoom: 13, center: center, mapTypeControl: false, streetViewControl: false });
+            document.getElementById('gmap').style.display = 'block';
+            document.getElementById('map-ph').style.display = 'none';
+            if (uLat) new google.maps.Marker({ position: { lat: uLat, lng: uLng }, map: gmap, title: 'You', icon: { path: google.maps.SymbolPath.CIRCLE, scale: 9, fillColor: '#1565C0', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 } });
+            for (var i = 0; i < shopList.length; i++) {
+                var s = shopList[i]; if (!s.latitude || !s.longitude) continue;
+                (function (shop) {
+                    var m = new google.maps.Marker({ position: { lat: parseFloat(shop.latitude), lng: parseFloat(shop.longitude) }, map: gmap, title: shop.shop_name });
+                    var iw = new google.maps.InfoWindow({ content: '<b>' + shop.shop_name + '</b><br>' + shop.category + '<br>📞 ' + shop.phone });
+                    m.addListener('click', function () { iw.open(gmap, m); });
+                })(s);
+            }
+        };
+
+        // ===================== ADMIN =====================
+        function openAdmin() {
+            document.getElementById('adm-login').style.display = 'block';
+            document.getElementById('adm-dash').style.display = 'none';
+            document.getElementById('adm-pw').value = '';
+            document.getElementById('adm-modal').classList.add('open');
+        }
+        function closeAdmin() { document.getElementById('adm-modal').classList.remove('open'); }
+
+        function doLogin() {
+            if (document.getElementById('adm-pw').value !== ADMIN_PASS) {
+                showToast(lang === 'kn' ? '❌ ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್' : '❌ Wrong password'); return;
+            }
+            isAdminLoggedIn = true; // also unlock add tab
+            document.getElementById('adm-login').style.display = 'none';
+            document.getElementById('adm-dash').style.display = 'block';
+            renderAdminDash();
+        }
+
+        function renderAdminDash() {
+            // Emergency
+            var html = '';
+            for (var i = 0; i < emgList.length; i++) {
+                html += '<div class="emg-card"><div class="emg-card-top">🚨 #' + (i + 1) + '</div>' +
+                    '<div class="emg-card-row">' +
+                    '<input type="text" id="en' + i + '" value="' + emgList[i].name + '" placeholder="Name">' +
+                    '<input type="text" id="enum' + i + '" value="' + emgList[i].number + '" placeholder="Number" style="max-width:100px">' +
+                    '<button class="save-btn" onclick="saveEmgItem(' + i + ')">💾 ' + (lang === 'kn' ? 'ಉಳಿಸಿ' : 'Save') + '</button>' +
+                    '<button class="del-btn-s" onclick="delEmg(' + i + ')">🗑️</button>' +
+                    '</div></div>';
+            }
+            document.getElementById('adm-emg-list').innerHTML = html;
+
+            // Shops
+            setText('adm-sh-cnt', shopList.length);
+            var shtml = '';
+            for (var j = 0; j < shopList.length; j++) {
+                var s = shopList[j];
+                shtml += '<div class="adm-shop-row"><div class="asi"><div class="aname">' + s.shop_name + '</div>' +
+                    '<div class="asub">' + s.category + ' • 📞 ' + s.phone + '</div>' +
+                    (s.shop_timings ? '<div class="asub" style="color:var(--green)">🕐 ' + s.shop_timings.split('|')[0] + '</div>' : '') +
+                    '</div><button class="adm-del" onclick="delShop(' + j + ')">🗑️ Del</button></div>';
+            }
+            document.getElementById('adm-sh-list').innerHTML = shtml || '<p style="color:var(--text-light);font-size:13px">No shops yet</p>';
+
+            // Feedback
+            setText('adm-fb-cnt', fbList.length);
+            var fhtml = '';
+            for (var k = 0; k < fbList.length; k++) {
+                fhtml += '<div class="fb-item">' + fbList[k].user_message + '<div class="fb-dt">' + new Date(fbList[k].created_at).toLocaleString() + '</div></div>';
+            }
+            document.getElementById('adm-fb-list').innerHTML = fhtml || '<p style="color:var(--text-light);font-size:13px">No feedback yet</p>';
+        }
+
+        function saveEmgItem(i) {
+            var n = document.getElementById('en' + i).value.trim();
+            var num = document.getElementById('enum' + i).value.trim();
+            if (!n || !num) { showToast(lang === 'kn' ? 'ಹೆಸರು & ಸಂಖ್ಯೆ ಬೇಕು' : 'Name & number required'); return; }
+            emgList[i] = { name: n, number: num };
+            saveEmgStore(); renderAdminDash();
+            showToast(lang === 'kn' ? '✅ ಉಳಿಸಲಾಯಿತು' : '✅ Saved');
+        }
+
+        function addEmg() {
+            var n = document.getElementById('new-emg-name').value.trim();
+            var num = document.getElementById('new-emg-num').value.trim();
+            if (!n || !num) { showToast(lang === 'kn' ? 'ಹೆಸರು & ಸಂಖ್ಯೆ ನಮೂದಿಸಿ' : 'Enter name & number'); return; }
+            emgList.push({ name: n, number: num });
+            saveEmgStore();
+            document.getElementById('new-emg-name').value = '';
+            document.getElementById('new-emg-num').value = '';
+            renderAdminDash();
+            showToast(lang === 'kn' ? '✅ ಸೇರಿಸಲಾಯಿತು' : '✅ Added');
+        }
+
+        function delEmg(i) {
+            emgList.splice(i, 1); saveEmgStore(); renderAdminDash(); renderEmg();
+        }
+
+        function saveEmgStore() {
+            localStorage.setItem('no_emg', JSON.stringify(emgList)); renderEmg();
+        }
+
+        function delShop(i) {
+            if (!confirm(lang === 'kn' ? 'ಅಂಗಡಿ ಅಳಿಸುವುದೇ?' : 'Delete this shop?')) return;
+            shopList.splice(i, 1);
+            localStorage.setItem('no_shops', JSON.stringify(shopList));
+            renderCats(); doFilter(); renderAdminDash();
+        }
+
+        // ===================== TOAST =====================
+        function showToast(msg) {
+            var el = document.getElementById('toast');
+            el.textContent = msg; el.classList.add('show');
+            setTimeout(function () { el.classList.remove('show'); }, 2800);
+        }
+
+        // Close modals on backdrop
+        document.getElementById('loc-modal').addEventListener('click', function (e) { if (e.target === this) closeLoc(); });
+        document.getElementById('adm-modal').addEventListener('click', function (e) { if (e.target === this) closeAdmin(); });
+        document.getElementById('gate-modal').addEventListener('click', function (e) { if (e.target === this) closeGate(); });
+    </script>
+</body>
+
+</html>

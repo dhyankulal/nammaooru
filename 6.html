@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Namma Ooru | ನಮ್ಮ ಊರು</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;500;600;700&family=Tiro+Kannada&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --saffron: #E07B1A;
+            --saffron-d: #C56A0F;
+            --saffron-light: #FFF4E6;
+            --green: #2E7D32;
+            --green-light: #E8F5E9;
+            --red: #C62828;
+            --blue: #1565C0;
+            --indigo: #3949AB;
+            --text-dark: #1A1A1A;
+            --text-mid: #4A4A4A;
+            --text-light: #787878;
+            --border: #E2DDD8;
+            --bg: #F6F2ED;
+            --card: #FFFFFF;
+            --shadow: 0 2px 10px rgba(0, 0, 0, .09);
+            --shadow-s: 0 1px 5px rgba(0, 0, 0, .07);
+            --r: 12px;
+            --r-s: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Poppins', 'Noto Sans Kannada', sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            font-size: 15px;
+            overflow-x: hidden;
+        }
+
+        /* ─── SCREENS ──────────────────────────────────── */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* ─── LANGUAGE SCREEN ───────────────────────────── */
+        #s-lang {
+            background: linear-gradient(160deg, #FFF9F0 0%, #F0F4FF 100%);
+            align-items: center;
+            justify-content: center;
+            padding: 48px 28px;
+            text-align: center;
+        }
+
+        .lang-logo {
+            font-size: 70px;
+            margin-bottom: 8px;
+            display: block;
+            filter: drop-shadow(0 4px 8px rgba(224, 123, 26, .3));
+        }
+
+        .lang-h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--saffron);
+            letter-spacing: -0.5px;
+        }
+
+        .lang-h2 {
+            font-size: 20px;
+            color: var(--green);
+            margin-top: 4px;
+            margin-bottom: 8px;
+            font-family: 'Noto Sans Kannada', sans-serif;
+        }
+
+        .lang-tag {
+            display: inline-block;
+            background: var(--saffron-light);
+            color: var(--saffron);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .lang-q {
+            font-size: 14px;
+            color: var(--text-mid);
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 14px;
+            padding: 18px 22px;
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            background: var(--card);
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .18s;
+            box-shadow: var(--shadow-s);
+        }
+
+        .lang-btn:hover,
+        .lang-btn:active {
+            border-color: var(--saffron);
+            background: var(--saffron-light);
+        }
+
+        .lang-flag {
+            font-size: 28px;
+        }
+
+        .lang-text {
+            text-align: left;
+        }
+
+        .lang-text strong {
+            display: block;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .lang-text small {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* ─── PHONE SCREEN ───────────────────────────────── */
+        #s-phone {
+            background: linear-gradient(160deg, #FFF9F0, #F0F4FF);
+            align-items: center;
+            justify-content: center;
+            padding: 32px 22px;
+        }
+
+        .phone-box {
+            background: var(--card);
+            border-radius: 18px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .13);
+        }
+
+        .pb-icon {
+            font-size: 48px;
+            text-align: center;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .pb-h {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .pb-p {
+            color: var(--text-light);
+            font-size: 13px;
+            margin-bottom: 22px;
+            line-height: 1.55;
+        }
+
+        .inp {
+            width: 100%;
+            padding: 13px 15px;
+            border: 2px solid var(--border);
+            border-radius: var(--r);
+            font-size: 15px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color .15s;
+        }
+
+        .inp:focus {
+            border-color: var(--saffron);
+        }
+
+        .btn-p {
+            width: 100%;
+            padding: 14px;
+            background: var(--saffron);
+            color: #fff;
+            border: none;
+            border-radius: var(--r);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .btn-p:active {
+            background: var(--saffron-d);
+        }
+
+        .btn-o {
+            width: 100%;
+            padding: 12px;
+            background: var(--card);
+            color: var(--saffron);
+            border: 2px solid var(--saffron);
+            border-radius: var(--r);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 9px;
+            font-family: inherit;
+        }
+
+        /* ─── APP SHELL ───────────────────────────────────── */
+        #s-app {
+            background: var(--bg);
+        }
+
+        .app-hdr {
+            background: var(--saffron);
+            color: #fff;
+            padding: 11px 14px 11px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(224, 123, 26, .4);
+        }
+
+        .hdr-logo {
+            flex: 1;
+            font-size: 19px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .hdr-logo small {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            opacity: .88;
+        }
+
+        .hbtn {
+            background: rgba(255, 255, 255, .2);
+            border: 1.5px solid rgba(255, 255, 255, .35);
+            color: #fff;
+            padding: 7px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-family: inherit;
+            transition: background .15s;
+        }
+
+        .hbtn:active {
+            background: rgba(255, 255, 255, .38);
+        }
+
+        .loc-bar {
+            background: var(--green);
+            color: #fff;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            flex-wrap: nowrap;
+            overflow: hidden;
+        }
+
+        .loc-txt {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .loc-sb {
+            background: rgba(255, 255, 255, .2);
+            border: 1px solid rgba(255, 255, 255, .4);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        /* Emergency strip */
+        .emg-strip {
+            background: #FFF4E6;
+            border-bottom: 2px solid #FFD09B;
+            padding: 7px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+
+        .emg-strip::-webkit-scrollbar {
+            display: none;
+        }
+
+        .emg-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--red);
+            white-space: nowrap;
+            flex-shrink: 0;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .emg-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--red);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .emg-chip:active {
+            opacity: .82;
+        }
+
+        /* ─── TABS ─────────────────────────────────────── */
+        .tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 47px;
+            z-index: 90;
+        }
+
+        .tb {
+            flex: 1;
+            padding: 10px 4px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all .15s;
+        }
+
+        .tb.on {
+            color: var(--saffron);
+            border-bottom-color: var(--saffron);
+            font-weight: 700;
+        }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 30px;
+        }
+
+        .pane {
+            display: none;
+            padding: 14px;
+        }
+
+        .pane.on {
+            display: block;
+        }
+
+        /* ─── SEARCH & FILTER ────────────────────────────── */
+        .search-wrap {
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 13px 14px 13px 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--r);
+            font-size: 14px;
+            outline: none;
+            background: var(--card);
+            font-family: inherit;
+            transition: border-color .15s;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--saffron);
+        }
+
+        .s-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .cat-row {
+            display: flex;
+            gap: 7px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 6px;
+        }
+
+        .cat-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .chip {
+            flex-shrink: 0;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            background: var(--card);
+            color: var(--text-mid);
+            transition: all .15s;
+        }
+
+        .chip.on {
+            background: var(--saffron);
+            color: #fff;
+            border-color: var(--saffron);
+        }
+
+        .res-count {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        /* ─── SHOP CARD ────────────────────────────────── */
+        .shop-card {
+            background: var(--card);
+            border-radius: var(--r);
+            box-shadow: var(--shadow);
+            margin-bottom: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, .04);
+        }
+
+        .shop-img {
+            width: 100%;
+            height: 155px;
+            object-fit: cover;
+        }
+
+        .shop-ph {
+            width: 100%;
+            height: 155px;
+            background: linear-gradient(135deg, #FFE5C0 0%, #FFF9DC 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+        }
+
+        .shop-body {
+            padding: 13px 14px 14px;
+        }
+
+        .shop-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            line-height: 1.25;
+        }
+
+        .shop-badge {
+            display: inline-block;
+            background: var(--green-light);
+            color: var(--green);
+            padding: 3px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .shop-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .mrow {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-mid);
+        }
+
+        .mrow .mi {
+            font-size: 15px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .dist-lbl {
+            font-weight: 700;
+            color: var(--saffron);
+        }
+
+        .timing-row {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .shop-actions {
+            display: flex;
+            gap: 9px;
+            margin-top: 12px;
+        }
+
+        .call-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: var(--green);
+            color: #fff;
+            padding: 12px;
+            border-radius: var(--r-s);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .map-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: var(--blue);
+            color: #fff;
+            padding: 12px 14px;
+            border-radius: var(--r-s);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .call-btn:active {
+            opacity: .85;
+        }
+
+        .map-btn:active {
+            opacity: .85;
+        }
+
+        .no-shops {
+            text-align: center;
+            padding: 56px 24px;
+            color: var(--text-light);
+        }
+
+        .no-shops .big {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ─── MAP ─────────────────────────────────────── */
+        #map-wrap {
+            height: calc(100vh - 210px);
+            border-radius: var(--r);
+            overflow: hidden;
+            background: #E8E0D5;
+            position: relative;
+        }
+
+        #lmap {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        .map-ph {
+            text-align: center;
+            padding: 32px 20px;
+            color: var(--text-mid);
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+        }
+
+        .map-ph span {
+            font-size: 52px;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        /* ─── FORM ────────────────────────────────────── */
+        .form-card {
+            background: var(--card);
+            border-radius: var(--r);
+            padding: 18px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-s);
+        }
+
+        .form-card h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--saffron);
+            border-bottom: 2px solid var(--saffron-light);
+            padding-bottom: 9px;
+            margin-bottom: 15px;
+        }
+
+        .fg {
+            margin-bottom: 14px;
+        }
+
+        .fg label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-mid);
+            margin-bottom: 5px;
+            letter-spacing: .2px;
+        }
+
+        .fg input,
+        .fg select,
+        .fg textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 2px solid var(--border);
+            border-radius: var(--r-s);
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+            transition: border-color .15s;
+            background: var(--card);
+        }
+
+        .fg input:focus,
+        .fg select:focus,
+        .fg textarea:focus {
+            border-color: var(--saffron);
+        }
+
+        .fg textarea {
+            resize: vertical;
+            min-height: 72px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+            line-height: 1.5;
+        }
+
+        .img-prev {
+            display: none;
+            width: 100%;
+            border-radius: var(--r-s);
+            margin-top: 10px;
+            max-height: 180px;
+            object-fit: cover;
+        }
+
+        .row2 {
+            display: flex;
+            gap: 9px;
+        }
+
+        .row2 .fg {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .loc-det {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            background: var(--green-light);
+            color: var(--green);
+            border: 1.5px solid var(--green);
+            padding: 11px;
+            border-radius: var(--r-s);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 6px;
+            font-family: inherit;
+        }
+
+        /* Timing table */
+        .t-table {
+            border: 2px solid var(--border);
+            border-radius: var(--r-s);
+            overflow: hidden;
+        }
+
+        .trow {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 11px;
+            border-bottom: 1px solid #F0EDE8;
+            background: var(--card);
+            flex-wrap: wrap;
+        }
+
+        .trow:last-child {
+            border-bottom: none;
+        }
+
+        .trow.c-row {
+            background: #FAFAF8;
+        }
+
+        .day-lbl {
+            font-size: 12px;
+            font-weight: 700;
+            width: 32px;
+            flex-shrink: 0;
+        }
+
+        .day-lbl.sun {
+            color: var(--red);
+        }
+
+        .t-times {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .t-times input[type=time] {
+            flex: 1;
+            padding: 7px 8px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            min-width: 0;
+            font-family: inherit;
+        }
+
+        .t-times input[type=time]:focus {
+            border-color: var(--saffron);
+        }
+
+        .t-sep {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .trow.c-row .t-times {
+            opacity: .3;
+            pointer-events: none;
+        }
+
+        .closed-lbl {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: var(--text-light);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .closed-lbl input {
+            accent-color: var(--red);
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+        }
+
+        /* ─── FEEDBACK ────────────────────────────────── */
+        .fb-ok {
+            background: var(--green-light);
+            color: var(--green);
+            padding: 14px;
+            border-radius: var(--r);
+            text-align: center;
+            font-weight: 600;
+            display: none;
+            margin-bottom: 14px;
+            font-size: 14px;
+        }
+
+        /* ─── TOAST ────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 26px;
+            left: 50%;
+            transform: translateX(-50%) translateY(70px);
+            background: #222;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            z-index: 9999;
+            transition: transform .25s;
+            white-space: nowrap;
+            pointer-events: none;
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ─── MODALS ────────────────────────────────────── */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 999;
+            overflow-y: auto;
+        }
+
+        .modal.open {
+            display: block;
+        }
+
+        .modal-inner {
+            background: var(--bg);
+            min-height: 100vh;
+            padding: 18px 16px 50px;
+        }
+
+        .m-hdr {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-dark);
+        }
+
+        .m-hdr h2 {
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .sm-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .55);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .sm-modal.open {
+            display: flex;
+        }
+
+        .sm-box {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px 20px;
+            width: 100%;
+            max-width: 360px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .2);
+        }
+
+        .sm-box h3 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        /* Gate */
+        .gate-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .62);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .gate-overlay.open {
+            display: flex;
+        }
+
+        .gate-box {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 30px 24px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .25);
+        }
+
+        .gate-box h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--saffron);
+        }
+
+        .gate-box p {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .gate-err {
+            font-size: 12px;
+            color: var(--red);
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* ─── ADMIN PANEL ──────────────────────────────── */
+        .adm-sec {
+            margin-bottom: 22px;
+        }
+
+        .adm-sec h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-mid);
+            padding: 9px 0;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge {
+            background: var(--saffron-light);
+            color: var(--saffron);
+            padding: 2px 9px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .emg-card {
+            background: #FFF9F0;
+            border: 1.5px solid #FFD0A0;
+            border-radius: var(--r-s);
+            padding: 11px;
+            margin-bottom: 9px;
+        }
+
+        .emg-card-top {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--red);
+            margin-bottom: 7px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .emg-card-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .emg-card-row input {
+            flex: 1;
+            min-width: 70px;
+            padding: 9px 10px;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .emg-card-row input:focus {
+            border-color: var(--saffron);
+        }
+
+        .save-btn {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .del-btn-s {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 9px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .emg-add {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .emg-add input {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 7px;
+            font-size: 13px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .emg-add input:focus {
+            border-color: var(--saffron);
+        }
+
+        .emg-add button {
+            background: var(--green);
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+        }
+
+        .adm-shop-row {
+            background: var(--card);
+            border-radius: var(--r-s);
+            padding: 12px 14px;
+            margin-bottom: 9px;
+            box-shadow: var(--shadow-s);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adm-shop-row .asi {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .adm-shop-row .aname {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .adm-shop-row .asub {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .adm-shop-row .adm-del {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            font-family: inherit;
+        }
+
+        .fb-item {
+            background: #FFF9F0;
+            border-left: 4px solid var(--saffron);
+            padding: 11px 13px;
+            border-radius: 0 var(--r-s) var(--r-s) 0;
+            margin-bottom: 9px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+
+        .fb-item .fb-dt {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 5px;
+        }
+
+        /* loading state */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(224, 123, 26, .25);
+            border-top-color: var(--saffron);
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-box {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════ SCREEN 1 : LANGUAGE ═══════════════ -->
+    <div class="screen active" id="s-lang">
+        <span class="lang-logo">🏘️</span>
+        <div class="lang-h1">Namma Ooru</div>
+        <div class="lang-h2">ನಮ್ಮ ಊರು</div>
+        <span class="lang-tag">Local Shop Finder • ಸ್ಥಳೀಯ ಅಂಗಡಿ ಹುಡುಕಾಟ</span>
+        <p class="lang-q">Choose your language / ನಿಮ್ಮ ಭಾಷೆ ಆರಿಸಿ</p>
+        <button class="lang-btn" onclick="chooseLang('en')">
+            <span class="lang-flag">🇬🇧</span>
+            <span class="lang-text"><strong>English</strong><small>Continue in English</small></span>
+        </button>
+        <button class="lang-btn" onclick="chooseLang('kn')">
+            <span class="lang-flag">🇮🇳</span>
+            <span class="lang-text"><strong>ಕನ್ನಡ</strong><small>ಕನ್ನಡದಲ್ಲಿ ಮುಂದುವರಿಸಿ</small></span>
+        </button>
+    </div>
+
+    <!-- ═══════════════ SCREEN 2 : PHONE ═══════════════ -->
+    <div class="screen" id="s-phone">
+        <div class="phone-box">
+            <span class="pb-icon">📱</span>
+            <div class="pb-h" id="ph-h">Your Phone Number</div>
+            <p class="pb-p" id="ph-p">Enter your mobile number to get started. No account needed.</p>
+            <input class="inp" type="tel" id="ph-inp" placeholder="10-digit mobile number" maxlength="10"
+                inputmode="numeric">
+            <button class="btn-p" id="ph-cb" onclick="savePhone()">Continue →</button>
+            <button class="btn-o" id="ph-sb" onclick="skipPhone()">Skip for now</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ SCREEN 3 : MAIN APP ═══════════════ -->
+    <div class="screen" id="s-app">
+
+        <div class="app-hdr">
+            <div class="hdr-logo">🏘️ Namma Ooru<small id="app-sub">Your local shop finder</small></div>
+            <button class="hbtn" id="h-add-btn" onclick="switchTab('add')">➕ <span id="h-add-lbl">Add</span></button>
+            <button class="hbtn" onclick="openAdmin()">👤</button>
+        </div>
+
+        <div class="loc-bar">
+            <span>📍</span>
+            <span class="loc-txt" id="loc-txt">Getting location…</span>
+            <button class="loc-sb" onclick="refreshLoc()">🔄</button>
+            <button class="loc-sb" onclick="openLocModal()" id="loc-m-btn">✏️</button>
+        </div>
+
+        <div class="emg-strip" id="emg-strip"></div>
+
+        <div class="tabs">
+            <div class="tb on" id="tb-shops" onclick="switchTab('shops')"><span id="tl-shops">🏪 Shops</span></div>
+            <div class="tb" id="tb-map" onclick="switchTab('map')"><span id="tl-map">🗺️ Map</span></div>
+            <div class="tb" id="tb-add" onclick="switchTab('add')"><span id="tl-add">➕ Add</span></div>
+            <div class="tb" id="tb-feedback" onclick="switchTab('feedback')"><span id="tl-fb">💬 Feedback</span></div>
+        </div>
+
+        <div class="scroll-area">
+
+            <!-- SHOPS TAB -->
+            <div class="pane on" id="p-shops">
+                <div class="search-wrap">
+                    <span class="s-icon">🔍</span>
+                    <input type="text" id="s-inp" placeholder="Search shops, category…" oninput="doFilter()">
+                </div>
+                <div class="cat-row" id="cat-row"></div>
+                <div class="res-count" id="res-count"></div>
+                <div id="shops-list">
+                    <div class="loading-box"><span class="spinner"></span> Loading…</div>
+                </div>
+            </div>
+
+            <!-- MAP TAB -->
+            <div class="pane" id="p-map">
+                <div id="map-wrap">
+                    <div class="map-ph" id="map-ph">
+                        <span>🗺️</span>
+                        <strong id="map-msg">Add your LocationIQ key to enable the map</strong>
+                        <p style="font-size:12px;margin-top:8px">Use 🗺️ button on shop cards for directions</p>
+                    </div>
+                    <div id="lmap"></div>
+                </div>
+            </div>
+
+            <!-- ADD SHOP TAB -->
+            <div class="pane" id="p-add">
+                <div id="add-locked-msg"
+                    style="display:none;text-align:center;padding:48px 20px;color:var(--text-light);">
+                    <div style="font-size:52px;margin-bottom:12px">🔐</div>
+                    <div style="font-size:16px;font-weight:700;color:var(--text-mid);margin-bottom:6px" id="add-lock-h">
+                        Admin Access Required</div>
+                    <div style="font-size:13px;margin-bottom:20px" id="add-lock-p">Please login as admin to add shops.
+                    </div>
+                    <button class="btn-p" style="max-width:240px;margin:0 auto" onclick="openAdmin()">🔓 Login as
+                        Admin</button>
+                </div>
+                <div id="add-form-wrap">
+                    <div class="form-card">
+                        <h3 id="fh">🏪 Register Your Shop</h3>
+
+                        <div class="fg"><label id="fl-nm">Shop Name *</label>
+                            <input type="text" id="fi-nm" placeholder="e.g. Raju Kirana Store">
+                        </div>
+
+                        <div class="fg">
+                            <label id="fl-ct">Category *</label>
+                            <select id="fi-ct" onchange="handleCatChange(this)">
+                                <option value="">-- Select Category --</option>
+                                <option>Grocery / ಕಿರಾಣಿ</option>
+                                <option>Stationery / ಸ್ಟೇಷನರಿ</option>
+                                <option>Medical / ಮೆಡಿಕಲ್</option>
+                                <option>Mobile Shop / ಮೊಬೈಲ್ ಅಂಗಡಿ</option>
+                                <option>Vegetables / ತರಕಾರಿ</option>
+                                <option>Bakery / ಬೇಕರಿ</option>
+                                <option>Tailoring / ಟೈಲರಿಂಗ್</option>
+                                <option>Hardware / ಹಾರ್ಡ್‌ವೇರ್</option>
+                                <option>Salon / ಸೆಲೂನ್</option>
+                                <option>Tea Stall / ಟೀ ಅಂಗಡಿ</option>
+                                <option>Hotel / Restaurant / ಹೋಟೆಲ್</option>
+                                <option>Vehicles / ವಾಹನ ಸೇವೆ</option>
+                                <option value="other">Other / ಇತರ</option>
+                            </select>
+                            <input type="text" id="fi-ct-other" placeholder="Enter category name"
+                                style="display:none;margin-top:8px;">
+                        </div>
+
+                        <div class="fg"><label id="fl-ph">Phone Number *</label>
+                            <input type="tel" id="fi-ph" placeholder="10-digit number" maxlength="10"
+                                inputmode="numeric">
+                        </div>
+
+                        <div class="fg"><label id="fl-ad">Address</label>
+                            <textarea id="fi-ad" placeholder="Village, road name, landmark…" rows="2"></textarea>
+                        </div>
+
+                        <div class="fg">
+                            <label id="fl-tm">Shop Timings (Day by Day)</label>
+                            <p class="hint" id="fl-tm-h" style="margin-bottom:8px">Set open/close time. Check "Closed"
+                                for holidays.</p>
+                            <div class="t-table" id="timing-table"></div>
+                        </div>
+
+                        <div class="fg">
+                            <label id="fl-ex">Extra Details</label>
+                            <textarea id="fi-ex" placeholder="Home delivery available, specialities, etc."
+                                rows="2"></textarea>
+                        </div>
+
+                        <div class="fg">
+                            <label id="fl-pt">Shop Photo</label>
+                            <p class="hint" id="fl-pt-h">Upload a clear photo of your shop</p>
+                            <input type="file" id="fi-img" accept="image/*" onchange="previewImg(this)">
+                            <img class="img-prev" id="img-prev" src="" alt="Preview">
+                            <div id="img-upload-status" style="font-size:12px;color:var(--text-light);margin-top:4px;">
+                            </div>
+                        </div>
+
+                        <div class="fg">
+                            <label id="fl-lc">Shop Location *</label>
+                            <button type="button" class="loc-det" id="loc-det-btn" onclick="detectFormLoc()">
+                                📍 <span id="fl-dtc">Use My Current Location</span>
+                            </button>
+                            <p class="hint" id="fl-lc-h" style="margin:6px 0 6px">Or enter coordinates manually:</p>
+                            <div class="row2">
+                                <div class="fg"><input type="number" id="fi-lat" placeholder="Latitude" step="any">
+                                </div>
+                                <div class="fg"><input type="number" id="fi-lng" placeholder="Longitude" step="any">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-p" id="f-sub" onclick="submitShop()">✅ Submit Shop</button>
+                        <div id="form-status" style="font-size:13px;margin-top:10px;text-align:center;display:none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FEEDBACK TAB -->
+            <div class="pane" id="p-feedback">
+                <div class="form-card">
+                    <h3 id="fb-h-t">💬 Feedback / Suggestions</h3>
+                    <p style="font-size:13px;color:var(--text-light);margin-bottom:16px" id="fb-d">Your feedback helps
+                        us improve!</p>
+                    <div class="fb-ok" id="fb-ok"></div>
+                    <div class="fg">
+                        <label id="fb-l">Your Message</label>
+                        <textarea id="fb-msg" rows="5" placeholder="Write your suggestion or feedback here…"></textarea>
+                    </div>
+                    <button class="btn-p" id="fb-btn" onclick="submitFeedback()">Send Feedback</button>
+                </div>
+            </div>
+
+        </div><!-- scroll-area -->
+    </div><!-- s-app -->
+
+    <!-- ═══════════════ ADMIN MODAL ═══════════════ -->
+    <div class="modal" id="adm-modal">
+        <div class="modal-inner">
+            <div class="m-hdr">
+                <button class="back-btn" onclick="closeAdmin()">←</button>
+                <h2 id="adm-ttl">Admin Panel</h2>
+            </div>
+
+            <div id="adm-login">
+                <div class="form-card">
+                    <h3>🔐 Admin Login</h3>
+                    <div class="fg">
+                        <label>Password</label>
+                        <input class="inp" type="password" id="adm-pw" placeholder="Enter admin password"
+                            onkeydown="if(event.key==='Enter')doLogin()">
+                    </div>
+                    <button class="btn-p" onclick="doLogin()">🔓 Login</button>
+                </div>
+            </div>
+
+            <div id="adm-dash" style="display:none;">
+                <!-- Emergency Numbers -->
+                <div class="adm-sec">
+                    <h4>🚨 <span id="adm-emg-h">Emergency Numbers</span></h4>
+                    <div id="adm-emg-list"></div>
+                    <div class="emg-add">
+                        <input type="text" id="new-emg-name" placeholder="Name (e.g. Hospital)">
+                        <input type="text" id="new-emg-num" placeholder="Number" style="max-width:110px"
+                            inputmode="tel">
+                        <button onclick="addEmg()">➕ Add</button>
+                    </div>
+                </div>
+
+                <!-- All Shops -->
+                <div class="adm-sec">
+                    <h4>🏪 <span id="adm-sh-h">All Shops</span> <span class="badge" id="adm-sh-cnt">0</span></h4>
+                    <div id="adm-sh-list"></div>
+                </div>
+
+                <!-- Feedback -->
+                <div class="adm-sec">
+                    <h4>💬 <span id="adm-fb-h">Feedback</span> <span class="badge" id="adm-fb-cnt">0</span></h4>
+                    <div id="adm-fb-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════ LOCATION MODAL ═══════════════ -->
+    <div class="sm-modal" id="loc-modal">
+        <div class="sm-box">
+            <h3>📍 Set Your Location</h3>
+            <!-- Address Search (LocationIQ) -->
+            <div class="fg" id="liq-search-wrap" style="margin-bottom:10px;">
+                <label style="font-size:12px;font-weight:600;color:var(--text-mid);display:block;margin-bottom:5px">🔍
+                    Search by address</label>
+                <div style="display:flex;gap:6px;">
+                    <input class="inp" type="text" id="liq-addr-inp" placeholder="e.g. Hunsur, Karnataka"
+                        oninput="liqAddrInputHandler()" style="flex:1;font-size:13px;padding:10px 12px;">
+                    <button onclick="liqSearch()"
+                        style="background:var(--saffron);color:#fff;border:none;padding:10px 13px;border-radius:var(--r);cursor:pointer;font-size:15px;flex-shrink:0;">🔍</button>
+                </div>
+                <div id="liq-results"
+                    style="border:1.5px solid var(--border);border-radius:var(--r-s);overflow:hidden;margin-top:5px;display:none;">
+                </div>
+                <div id="liq-status" style="font-size:11px;color:var(--text-light);margin-top:4px;min-height:14px;">
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+                <span style="font-size:11px;color:var(--text-light);">or enter coordinates</span>
+                <div style="flex:1;height:1px;background:var(--border);"></div>
+            </div>
+            <div class="fg"><label>Latitude</label>
+                <input class="inp" type="number" id="ml-lat" placeholder="e.g. 12.2958" step="any" inputmode="decimal">
+            </div>
+            <div class="fg"><label>Longitude</label>
+                <input class="inp" type="number" id="ml-lng" placeholder="e.g. 76.6394" step="any" inputmode="decimal">
+            </div>
+            <p style="font-size:11px;color:var(--text-light);margin-bottom:14px;line-height:1.5">Tip: Long-press on
+                Google Maps to get coordinates.</p>
+            <button class="btn-p" onclick="saveManualLoc()">Save Location</button>
+            <button class="btn-o" onclick="closeLoc()" style="margin-top:9px">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ═══════════════ GATE MODAL (Add Shop unlock) ═══════════════ -->
+    <div class="gate-overlay" id="gate-modal">
+        <div class="gate-box">
+            <h3>🔐 Admin Access Required</h3>
+            <p id="gate-msg">Only the admin can add or edit shop details. Please enter the admin password to continue.
+            </p>
+            <div class="fg">
+                <label
+                    style="font-size:12px;font-weight:600;color:var(--text-mid);display:block;margin-bottom:5px">Password</label>
+                <input class="inp" type="password" id="gate-pw" placeholder="Enter admin password"
+                    onkeydown="if(event.key==='Enter')doGateLogin()">
+                <div class="gate-err" id="gate-err">❌ Wrong password. Try again.</div>
+            </div>
+            <button class="btn-p" style="margin-top:4px" onclick="doGateLogin()">🔓 Unlock</button>
+            <button class="btn-o" style="margin-top:9px" onclick="closeGate()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ═══════════════════ CONFIG ═══════════════════════
+        // Replace these with your actual credentials
+        var SUPABASE_URL = 'https://cbzptvhtfmaetsejvgba.supabase.co';
+        var SUPABASE_KEY = 'cbzptvhtfmaetsejvgba';
+        var LOCATIONIQ_KEY = 'pk.d9cce650749842f80ea97fa8962bb5dc'; // Get free key at https://locationiq.com
+        var ADMIN_PASS = '123456';
+        var USE_SUPABASE = false; // set to true when SUPABASE_URL & KEY are real
+
+        // ═══════════════════ STATE ════════════════════════
+        var lang = localStorage.getItem('no_lang') || null;
+        var uLat = null, uLng = null;
+        var shopList = [];
+        var emgList = [];
+        var fbList = [];
+        var filteredShops = [];
+        var activeCat = 'All';
+        var lmap = null, lmapReady = false;
+        var isAdminLoggedIn = false;
+
+        // ═══════════════════ TRANSLATIONS ════════════════
+        var TR = {
+            en: {
+                appSub: 'Your local shop finder', addLbl: 'Add',
+                tShops: '🏪 Shops', tMap: '🗺️ Map', tAdd: '➕ Add', tFb: '💬 Feedback',
+                search: 'Search shops, category…',
+                noShops: 'No shops found', noShopsSub: 'Try a different search or category',
+                call: '📞 Call', mapBtn: '🗺️ Map',
+                fHead: '🏪 Register Your Shop',
+                flNm: 'Shop Name *', flCt: 'Category *', flPh: 'Phone Number *',
+                flAd: 'Address', flTm: 'Shop Timings (Day by Day)',
+                flTmH: 'Set open/close time. Check "Closed" for holidays.',
+                flEx: 'Extra Details (optional)', flPt: 'Shop Photo', flPtH: 'Upload a clear photo of your shop',
+                flLc: 'Shop Location *', flDtc: '📍 Use My Current Location', flLcH: 'Or enter coordinates manually:',
+                fSub: '✅ Submit Shop',
+                fbHt: '💬 Feedback / Suggestions', fbD: 'Your feedback helps us improve!',
+                fbL: 'Your Message', fbBtn: 'Send Feedback', fbOk: '✅ Thank you! Feedback submitted.',
+                admTtl: 'Admin Panel', admEmgH: 'Emergency Numbers', admShH: 'All Shops', admFbH: 'Feedback',
+                phH: 'Your Phone Number', phP: 'Enter your mobile number to get started. No account needed.',
+                phC: 'Continue →', phS: 'Skip for now',
+                dist: function (d) { return d < 1 ? (d * 1000).toFixed(0) + ' m away' : d.toFixed(1) + ' km away'; },
+                days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], cw: 'Closed',
+                loadingShops: 'Loading shops…', noLoc: 'Location not set',
+                addLockH: 'Admin Access Required', addLockP: 'Please login as admin to add shops.',
+                gateMsg: 'Only the admin can add or edit shop details. Please enter the admin password to continue.'
+            },
+            kn: {
+                appSub: 'ನಿಮ್ಮ ಸ್ಥಳೀಯ ಅಂಗಡಿ ಹುಡುಕಾಟ', addLbl: 'ಸೇರಿಸಿ',
+                tShops: '🏪 ಅಂಗಡಿ', tMap: '🗺️ ನಕ್ಷೆ', tAdd: '➕ ಸೇರಿಸಿ', tFb: '💬 ಪ್ರತಿಕ್ರಿಯೆ',
+                search: 'ಅಂಗಡಿ, ವರ್ಗ ಹುಡುಕಿ…',
+                noShops: 'ಅಂಗಡಿ ಕಂಡಿಲ್ಲ', noShopsSub: 'ಬೇರೆ ಪದ ಪ್ರಯತ್ನಿಸಿ',
+                call: '📞 ಕರೆ ಮಾಡಿ', mapBtn: '🗺️ ನಕ್ಷೆ',
+                fHead: '🏪 ನಿಮ್ಮ ಅಂಗಡಿ ನೋಂದಣಿ',
+                flNm: 'ಅಂಗಡಿ ಹೆಸರು *', flCt: 'ವರ್ಗ *', flPh: 'ಫೋನ್ ನಂಬರ್ *',
+                flAd: 'ವಿಳಾಸ', flTm: 'ಅಂಗಡಿ ಸಮಯ (ಪ್ರತಿ ದಿನ)',
+                flTmH: 'ತೆರೆದ/ಮುಚ್ಚಿದ ಸಮಯ ಹೊಂದಿಸಿ. ರಜಾ ದಿನ "ಮುಚ್ಚಿದೆ" ಆರಿಸಿ.',
+                flEx: 'ಹೆಚ್ಚಿನ ಮಾಹಿತಿ (ಐಚ್ಛಿಕ)', flPt: 'ಅಂಗಡಿ ಫೋಟೊ', flPtH: 'ಸ್ಪಷ್ಟ ಫೋಟೊ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ',
+                flLc: 'ಅಂಗಡಿ ಸ್ಥಳ *', flDtc: '📍 ನನ್ನ ಪ್ರಸ್ತುತ ಸ್ಥಳ ಬಳಸಿ', flLcH: 'ಅಥವಾ ನಿರ್ದೇಶಾಂಕ ನಮೂದಿಸಿ:',
+                fSub: '✅ ಅಂಗಡಿ ಸಲ್ಲಿಸಿ',
+                fbHt: '💬 ಪ್ರತಿಕ್ರಿಯೆ / ಸಲಹೆ', fbD: 'ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆ ನಮಗೆ ಸಹಾಯ!',
+                fbL: 'ನಿಮ್ಮ ಸಂದೇಶ', fbBtn: 'ಪ್ರತಿಕ್ರಿಯೆ ಕಳಿಸಿ', fbOk: '✅ ಧನ್ಯವಾದ! ಸ್ವೀಕರಿಸಲಾಗಿದೆ.',
+                admTtl: 'ಆಡಳಿತ ಫಲಕ', admEmgH: 'ತುರ್ತು ಸಂಖ್ಯೆಗಳು', admShH: 'ಎಲ್ಲ ಅಂಗಡಿಗಳು', admFbH: 'ಪ್ರತಿಕ್ರಿಯೆ',
+                phH: 'ನಿಮ್ಮ ಫೋನ್ ನಂಬರ್', phP: 'ಮೊಬೈಲ್ ನಂಬರ್ ನಮೂದಿಸಿ. ಖಾತೆ ಅಗತ್ಯವಿಲ್ಲ.',
+                phC: 'ಮುಂದುವರಿಸಿ →', phS: 'ಇದೀಗ ಬಿಟ್ಟುಬಿಡಿ',
+                dist: function (d) { return d < 1 ? (d * 1000).toFixed(0) + ' ಮೀ ದೂರ' : d.toFixed(1) + ' ಕಿಮಿ ದೂರ'; },
+                days: ['ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ', 'ರವಿ'], cw: 'ಮುಚ್ಚಿದೆ',
+                loadingShops: 'ಅಂಗಡಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…', noLoc: 'ಸ್ಥಳ ಗೊತ್ತಿಲ್ಲ',
+                addLockH: 'ಆಡಳಿತ ಪ್ರವೇಶ ಅಗತ್ಯ', addLockP: 'ಅಂಗಡಿ ಸೇರಿಸಲು ದಯವಿಟ್ಟು ಆಡಳಿತ ಖಾತೆ ಲಾಗಿನ್ ಮಾಡಿ.',
+                gateMsg: 'ಕೇವಲ ಆಡಳಿತಗಾರರು ಅಂಗಡಿ ವಿವರ ಸೇರಿಸಬಹುದು. ಮುಂದುವರಿಯಲು ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ.'
+            }
+        };
+
+        function t(key) { return (TR[lang] || TR['en'])[key] || key; }
+        function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+        // ═══════════════════ DEMO DATA ════════════════════
+        var DEMO_SHOPS = [
+            { id: 'd1', shop_name: 'Raju Kirana Store', category: 'Grocery / ಕಿರಾಣಿ', phone: '9876543210', address: 'Main Road, Hunsur', latitude: 12.3049, longitude: 76.2937, image_url: '', shop_timings: 'Mon:07:00-21:00|Tue:07:00-21:00|Wed:07:00-21:00|Thu:07:00-21:00|Fri:07:00-21:00|Sat:07:00-21:00|Sun:closed', extra_details: 'Home delivery available' },
+            { id: 'd2', shop_name: 'Sri Sai Medical', category: 'Medical / ಮೆಡಿಕಲ್', phone: '9845678901', address: 'Bus Stand Road, Hunsur', latitude: 12.3065, longitude: 76.2955, image_url: '', shop_timings: 'Mon:08:00-22:00|Tue:08:00-22:00|Wed:08:00-22:00|Thu:08:00-22:00|Fri:08:00-22:00|Sat:08:00-22:00|Sun:10:00-18:00', extra_details: 'Doctor available 6–8 PM' },
+            { id: 'd3', shop_name: 'Ganesh Stationery', category: 'Stationery / ಸ್ಟೇಷನರಿ', phone: '9731234567', address: 'School Road, Hunsur', latitude: 12.3030, longitude: 76.2920, image_url: '', shop_timings: 'Mon:09:00-19:00|Tue:09:00-19:00|Wed:09:00-19:00|Thu:09:00-19:00|Fri:09:00-19:00|Sat:09:00-19:00|Sun:closed', extra_details: 'Xerox & printing available' },
+            { id: 'd4', shop_name: 'Lakshmi Mobile', category: 'Mobile Shop / ಮೊಬೈಲ್ ಅಂಗಡಿ', phone: '9900112233', address: 'Market Road, Hunsur', latitude: 12.3080, longitude: 76.2975, image_url: '', shop_timings: 'Mon:10:00-20:00|Tue:10:00-20:00|Wed:10:00-20:00|Thu:10:00-20:00|Fri:10:00-20:00|Sat:10:00-20:00|Sun:closed', extra_details: 'All brands repaired' },
+            { id: 'd5', shop_name: 'Basaveshwara Vegetables', category: 'Vegetables / ತರಕಾರಿ', phone: '9632145870', address: 'Near Temple, Hunsur', latitude: 12.3010, longitude: 76.2900, image_url: '', shop_timings: 'Mon:06:00-11:00|Tue:06:00-11:00|Wed:06:00-11:00|Thu:06:00-11:00|Fri:06:00-11:00|Sat:06:00-11:00|Sun:06:00-10:00', extra_details: 'Fresh daily from farmers' }
+        ];
+        var DEMO_EMG = [{ name: 'Ambulance', number: '108' }, { name: 'Police', number: '100' }, { name: 'Fire', number: '101' }];
+
+        // ═══════════════════ SUPABASE HELPERS ═════════════
+        async function sbFetch(path, method, body) {
+            var url = SUPABASE_URL + '/rest/v1/' + path;
+            var headers = {
+                'apikey': SUPABASE_KEY,
+                'Authorization': 'Bearer ' + SUPABASE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': method === 'POST' ? 'return=representation' : ''
+            };
+            var opts = { method: method || 'GET', headers: headers };
+            if (body) opts.body = JSON.stringify(body);
+            var res = await fetch(url, opts);
+            if (!res.ok) throw new Error('Supabase error ' + res.status);
+            var text = await res.text();
+            return text ? JSON.parse(text) : [];
+        }
+
+        async function sbUploadImage(file) {
+            var ext = file.name.split('.').pop();
+            var fname = 'shop_' + Date.now() + '.' + ext;
+            var url = SUPABASE_URL + '/storage/v1/object/shop-images/' + fname;
+            var res = await fetch(url, {
+                method: 'POST',
+                headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': file.type },
+                body: file
+            });
+            if (!res.ok) throw new Error('Image upload failed');
+            return SUPABASE_URL + '/storage/v1/object/public/shop-images/' + fname;
+        }
+
+        // ═══════════════════ BOOT ═════════════════════════
+        window.onload = function () {
+            if (lang) {
+                var ph = localStorage.getItem('no_phone');
+                var sk = localStorage.getItem('no_phone_sk');
+                if (ph || sk) { bootApp(); } else { showPhoneScreen(); }
+            }
+        };
+
+        function chooseLang(l) {
+            lang = l;
+            localStorage.setItem('no_lang', l);
+            var ph = localStorage.getItem('no_phone');
+            var sk = localStorage.getItem('no_phone_sk');
+            if (ph || sk) { bootApp(); } else { showPhoneScreen(); }
+        }
+
+        function showPhoneScreen() {
+            show('s-phone');
+            setText('ph-h', t('phH'));
+            setText('ph-p', t('phP'));
+            document.getElementById('ph-cb').textContent = t('phC');
+            document.getElementById('ph-sb').textContent = t('phS');
+        }
+
+        function savePhone() {
+            var v = document.getElementById('ph-inp').value.trim();
+            if (v.length !== 10 || !/^\d{10}$/.test(v)) {
+                showToast(lang === 'kn' ? '10 ಅಂಕಿ ನಮೂದಿಸಿ' : 'Enter a valid 10-digit number'); return;
+            }
+            localStorage.setItem('no_phone', v);
+            bootApp();
+        }
+
+        function skipPhone() {
+            localStorage.setItem('no_phone_sk', '1');
+            bootApp();
+        }
+
+        function bootApp() {
+            show('s-app');
+            applyTranslations();
+            buildTimingTable();
+            getLocation();
+            loadData();
+            renderEmg();
+        }
+
+        function show(id) {
+            document.querySelectorAll('.screen').forEach(function (s) { s.classList.remove('active'); });
+            document.getElementById(id).classList.add('active');
+        }
+
+        // ═══════════════════ TRANSLATIONS ═════════════════
+        function applyTranslations() {
+            setText('app-sub', t('appSub'));
+            setText('h-add-lbl', t('addLbl'));
+            setText('tl-shops', t('tShops'));
+            setText('tl-map', t('tMap'));
+            setText('tl-add', t('tAdd'));
+            setText('tl-fb', t('tFb'));
+            var si = document.getElementById('s-inp'); if (si) si.placeholder = t('search');
+            setText('fh', t('fHead'));
+            setText('fl-nm', t('flNm')); setText('fl-ct', t('flCt')); setText('fl-ph', t('flPh'));
+            setText('fl-ad', t('flAd')); setText('fl-tm', t('flTm')); setText('fl-tm-h', t('flTmH'));
+            setText('fl-ex', t('flEx')); setText('fl-pt', t('flPt')); setText('fl-pt-h', t('flPtH'));
+            setText('fl-lc', t('flLc')); setText('fl-dtc', t('flDtc').replace('📍 ', ''));
+            document.getElementById('loc-det-btn').childNodes[1].textContent = ' ' + t('flDtc');
+            setText('fl-lc-h', t('flLcH'));
+            document.getElementById('f-sub').textContent = t('fSub');
+            setText('fb-h-t', t('fbHt')); setText('fb-d', t('fbD'));
+            setText('fb-l', t('fbL'));
+            document.getElementById('fb-btn').textContent = t('fbBtn');
+            setText('adm-ttl', t('admTtl')); setText('adm-emg-h', t('admEmgH'));
+            setText('adm-sh-h', t('admShH')); setText('adm-fb-h', t('admFbH'));
+            setText('add-lock-h', t('addLockH')); setText('add-lock-p', t('addLockP'));
+            document.getElementById('gate-msg').textContent = t('gateMsg');
+            refreshAddTabState();
+        }
+
+        // ═══════════════════ LOCATIONIQ HELPERS ═══════════
+        async function liqReverseGeocode(lat, lng) {
+            if (LOCATIONIQ_KEY === 'YOUR_LOCATIONIQ_KEY') return null;
+            try {
+                var url = 'https://us1.locationiq.com/v1/reverse?key=' + LOCATIONIQ_KEY + '&lat=' + lat + '&lon=' + lng + '&format=json&accept-language=' + (lang === 'kn' ? 'kn' : 'en');
+                var res = await fetch(url);
+                if (!res.ok) return null;
+                var data = await res.json();
+                return data && data.display_name ? data : null;
+            } catch (e) { return null; }
+        }
+
+        async function liqForwardGeocode(query) {
+            if (LOCATIONIQ_KEY === 'YOUR_LOCATIONIQ_KEY') return [];
+            try {
+                var url = 'https://us1.locationiq.com/v1/search?key=' + LOCATIONIQ_KEY + '&q=' + encodeURIComponent(query) + '&format=json&limit=5&accept-language=' + (lang === 'kn' ? 'kn' : 'en');
+                var res = await fetch(url);
+                if (!res.ok) return [];
+                var data = await res.json();
+                return Array.isArray(data) ? data : [];
+            } catch (e) { return []; }
+        }
+
+        function liqShortAddress(data) {
+            // Build a short human-friendly address from LocationIQ reverse result
+            var a = data.address || {};
+            var parts = [];
+            if (a.neighbourhood || a.suburb) parts.push(a.neighbourhood || a.suburb);
+            if (a.village || a.town || a.city) parts.push(a.village || a.town || a.city);
+            if (a.state_district) parts.push(a.state_district);
+            if (!parts.length && data.display_name) return data.display_name.split(',').slice(0, 2).join(',').trim();
+            return parts.join(', ');
+        }
+
+        // ═══════════════════ LOCATION ═════════════════════
+        function getLocation() {
+            setText('loc-txt', lang === 'kn' ? 'ಸ್ಥಳ ಪಡೆಯಲಾಗುತ್ತಿದೆ…' : 'Getting location…');
+            if (!navigator.geolocation) { setText('loc-txt', t('noLoc')); return; }
+            navigator.geolocation.getCurrentPosition(
+                async function (pos) {
+                    uLat = pos.coords.latitude; uLng = pos.coords.longitude;
+                    // Show coords immediately, then replace with address if LocationIQ is configured
+                    setText('loc-txt', uLat.toFixed(4) + ', ' + uLng.toFixed(4));
+                    doFilter();
+                    var geo = await liqReverseGeocode(uLat, uLng);
+                    if (geo) setText('loc-txt', '📍 ' + liqShortAddress(geo));
+                },
+                function () { setText('loc-txt', lang === 'kn' ? 'ಸ್ಥಳ ಸಿಗಲಿಲ್ಲ — ✏️ ಕ್ಲಿಕ್ ಮಾಡಿ' : 'Location denied — tap ✏️ to enter'); },
+                { timeout: 10000 }
+            );
+        }
+
+        function refreshLoc() { getLocation(); }
+
+        function openLocModal() { document.getElementById('loc-modal').classList.add('open'); }
+        function closeLoc() { document.getElementById('loc-modal').classList.remove('open'); }
+
+        async function saveManualLoc() {
+            var lat = parseFloat(document.getElementById('ml-lat').value);
+            var lng = parseFloat(document.getElementById('ml-lng').value);
+            if (isNaN(lat) || isNaN(lng)) { showToast(lang === 'kn' ? 'ಮಾನ್ಯ ಸ್ಥಳ ನಮೂದಿಸಿ' : 'Enter valid coordinates'); return; }
+            uLat = lat; uLng = lng;
+            setText('loc-txt', lat.toFixed(4) + ', ' + lng.toFixed(4));
+            closeLoc(); doFilter();
+            // Reverse geocode the manually entered coords
+            var geo = await liqReverseGeocode(uLat, uLng);
+            if (geo) setText('loc-txt', '📍 ' + liqShortAddress(geo));
+        }
+
+        // LocationIQ address search for location modal
+        var liqSearchTimer = null;
+        function liqAddrInputHandler() {
+            clearTimeout(liqSearchTimer);
+            var q = document.getElementById('liq-addr-inp').value.trim();
+            if (q.length < 3) { document.getElementById('liq-results').style.display = 'none'; return; }
+            liqSearchTimer = setTimeout(liqSearch, 600);
+        }
+
+        async function liqSearch() {
+            var q = document.getElementById('liq-addr-inp').value.trim();
+            if (!q) { return; }
+            if (LOCATIONIQ_KEY === 'YOUR_LOCATIONIQ_KEY') {
+                document.getElementById('liq-status').textContent = '⚠️ Add your LocationIQ key in CONFIG to use address search.';
+                return;
+            }
+            document.getElementById('liq-status').textContent = lang === 'kn' ? 'ಹುಡುಕಲಾಗುತ್ತಿದೆ…' : 'Searching…';
+            document.getElementById('liq-results').style.display = 'none';
+            var results = await liqForwardGeocode(q);
+            document.getElementById('liq-status').textContent = '';
+            if (!results.length) {
+                document.getElementById('liq-status').textContent = lang === 'kn' ? 'ಫಲಿತಾಂಶ ಸಿಗಲಿಲ್ಲ' : 'No results found';
+                return;
+            }
+            var html = results.map(function (r) {
+                var shortName = r.display_name ? r.display_name.split(',').slice(0, 3).join(',').trim() : '';
+                var safeName = shortName.replace(/\\/g, '').replace(/'/g, '').replace(/"/g, '');
+                return '<div onclick="liqSelectResult(' + parseFloat(r.lat) + ',' + parseFloat(r.lon) + ',\'' + safeName + '\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;line-height:1.4;background:var(--card);" onmouseover="this.style.background=\'var(--saffron-light)\'" onmouseout="this.style.background=\'var(--card)\'">📍 ' + escHtml(shortName) + '</div>';
+            }).join('');
+            var el = document.getElementById('liq-results');
+            el.innerHTML = html;
+            el.style.display = 'block';
+        }
+
+        function liqSelectResult(lat, lng, name) {
+            uLat = parseFloat(lat); uLng = parseFloat(lng);
+            document.getElementById('ml-lat').value = uLat.toFixed(6);
+            document.getElementById('ml-lng').value = uLng.toFixed(6);
+            document.getElementById('liq-results').style.display = 'none';
+            document.getElementById('liq-addr-inp').value = name;
+            setText('loc-txt', '📍 ' + name);
+            closeLoc(); doFilter();
+        }
+
+        // ═══════════════════ DATA LOADING ═════════════════
+        async function loadData() {
+            // Load emergency numbers
+            var storedEmg = localStorage.getItem('no_emg');
+            emgList = storedEmg ? JSON.parse(storedEmg) : DEMO_EMG.slice();
+            if (!storedEmg) localStorage.setItem('no_emg', JSON.stringify(emgList));
+            renderEmg();
+
+            // Load feedback (local)
+            fbList = JSON.parse(localStorage.getItem('no_fb') || '[]');
+
+            // Load shops
+            if (USE_SUPABASE && SUPABASE_URL !== 'https://your-project.supabase.co') {
+                try {
+                    shopList = await sbFetch('shops?select=*&order=id', 'GET');
+                } catch (e) {
+                    shopList = getLocalShops();
+                }
+            } else {
+                shopList = getLocalShops();
+            }
+            renderCats();
+            doFilter();
+        }
+
+        function getLocalShops() {
+            var stored = localStorage.getItem('no_shops');
+            if (stored) { var arr = JSON.parse(stored); return arr.length ? arr : DEMO_SHOPS.slice(); }
+            localStorage.setItem('no_shops', JSON.stringify(DEMO_SHOPS));
+            return DEMO_SHOPS.slice();
+        }
+
+        function saveShopsLocal() {
+            localStorage.setItem('no_shops', JSON.stringify(shopList));
+        }
+
+        // ═══════════════════ DISTANCE ════════════════════
+        function haversine(la1, lo1, la2, lo2) {
+            var R = 6371, d2r = Math.PI / 180;
+            var dLat = (la2 - la1) * d2r, dLon = (lo2 - lo1) * d2r;
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(la1 * d2r) * Math.cos(la2 * d2r) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        // ═══════════════════ CATEGORIES ══════════════════
+        function renderCats() {
+            var cats = ['All'];
+            shopList.forEach(function (s) { if (s.category && cats.indexOf(s.category) < 0) cats.push(s.category); });
+            var html = cats.map(function (c) {
+                return '<button class="chip' + (c === activeCat ? ' on' : '') + '" onclick="selectCat(\'' + escHtml(c) + '\')">' + (c === 'All' ? (lang === 'kn' ? 'ಎಲ್ಲ' : 'All') : c) + '</button>';
+            }).join('');
+            document.getElementById('cat-row').innerHTML = html;
+        }
+
+        function selectCat(c) { activeCat = c; renderCats(); doFilter(); }
+
+        // ═══════════════════ FILTER & RENDER ═════════════
+        function doFilter() {
+            var q = (document.getElementById('s-inp').value || '').trim().toLowerCase();
+            filteredShops = shopList.filter(function (s) {
+                var matchCat = activeCat === 'All' || s.category === activeCat;
+                var matchQ = !q || s.shop_name.toLowerCase().indexOf(q) > -1 || (s.category || '').toLowerCase().indexOf(q) > -1 || (s.address || '').toLowerCase().indexOf(q) > -1;
+                return matchCat && matchQ;
+            });
+
+            // Add distances
+            filteredShops.forEach(function (s) {
+                s._dist = (uLat && s.latitude && s.longitude) ? haversine(uLat, uLng, parseFloat(s.latitude), parseFloat(s.longitude)) : null;
+            });
+
+            // Sort by distance
+            filteredShops.sort(function (a, b) {
+                if (a._dist === null && b._dist === null) return 0;
+                if (a._dist === null) return 1;
+                if (b._dist === null) return -1;
+                return a._dist - b._dist;
+            });
+
+            setText('res-count', filteredShops.length + (lang === 'kn' ? ' ಅಂಗಡಿಗಳು ಕಂಡಿವೆ' : ' shops found'));
+            renderShops();
+        }
+
+        function maskPhone(ph) {
+            var p = String(ph || '');
+            if (p.length >= 10) return p.slice(0, 3) + 'XXXX' + p.slice(7);
+            return p;
+        }
+
+        function todayTimings(timings) {
+            if (!timings) return '';
+            var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            var daysk = ['ರವಿ', 'ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ'];
+            var today = new Date().getDay();
+            var code = days[today].toLowerCase();
+            var parts = timings.split('|');
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i].trim(); var idx = p.indexOf(':');
+                if (idx < 0) continue;
+                var dayPart = p.slice(0, idx).trim().toLowerCase();
+                if (dayPart === code || dayPart === days[today].toLowerCase()) {
+                    var time = p.slice(idx + 1).trim();
+                    if (time === 'closed') return lang === 'kn' ? 'ಇಂದು ಮುಚ್ಚಿದೆ' : 'Closed today';
+                    return (lang === 'kn' ? 'ಇಂದು: ' : 'Today: ') + time;
+                }
+            }
+            return '';
+        }
+
+        function renderShops() {
+            if (!filteredShops.length) {
+                document.getElementById('shops-list').innerHTML = '<div class="no-shops"><span class="big">🔍</span><strong>' + t('noShops') + '</strong><p>' + t('noShopsSub') + '</p></div>';
+                return;
+            }
+            var html = filteredShops.map(function (s) {
+                var dist = s._dist !== null ? '<span class="dist-lbl">' + t('dist')(s._dist) + '</span>' : '';
+                var img = s.image_url ? '<img class="shop-img" src="' + escHtml(s.image_url) + '" alt="' + escHtml(s.shop_name) + '" loading="lazy" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'"><div class="shop-ph" style="display:none">🏪</div>' : '<div class="shop-ph">🏪</div>';
+                var timing = todayTimings(s.shop_timings);
+                var maps = s.latitude && s.longitude ? 'https://www.openstreetmap.org/?mlat=' + s.latitude + '&mlon=' + s.longitude + '&zoom=17' : 'https://locationiq.com/geocoding?q=' + encodeURIComponent(s.address || s.shop_name);
+                return '<div class="shop-card">' + img +
+                    '<div class="shop-body">' +
+                    '<div class="shop-name">' + escHtml(s.shop_name) + '</div>' +
+                    '<span class="shop-badge">' + escHtml(s.category || '') + '</span>' +
+                    '<div class="shop-meta">' +
+                    (dist ? '<div class="mrow"><span class="mi">📍</span>' + dist + '</div>' : '') +
+                    '<div class="mrow"><span class="mi">📞</span>' + maskPhone(s.phone) + '</div>' +
+                    (s.address ? '<div class="mrow"><span class="mi">🏠</span><span>' + escHtml(s.address) + '</span></div>' : '') +
+                    (timing ? '<div class="mrow timing-row"><span class="mi">🕐</span>' + timing + '</div>' : '') +
+                    (s.extra_details ? '<div class="mrow"><span class="mi">ℹ️</span><span style="font-size:12px;color:var(--text-light)">' + escHtml(s.extra_details) + '</span></div>' : '') +
+                    '</div>' +
+                    '<div class="shop-actions">' +
+                    '<a class="call-btn" href="tel:' + escHtml(s.phone) + '">📞 ' + t('call') + '</a>' +
+                    '<a class="map-btn" href="' + maps + '" target="_blank">🗺️ ' + t('mapBtn') + '</a>' +
+                    '</div>' +
+                    '</div></div>';
+            }).join('');
+            document.getElementById('shops-list').innerHTML = html;
+        }
+
+        // ═══════════════════ EMERGENCY ════════════════════
+        function renderEmg() {
+            if (!emgList.length) { document.getElementById('emg-strip').innerHTML = ''; return; }
+            var html = '<span class="emg-lbl">🚨 SOS</span>';
+            emgList.forEach(function (e) {
+                html += '<a class="emg-chip" href="tel:' + escHtml(e.number) + '">' + escHtml(e.name) + ' ' + escHtml(e.number) + '</a>';
+            });
+            document.getElementById('emg-strip').innerHTML = html;
+        }
+
+        // ═══════════════════ TABS ═════════════════════════
+        function switchTab(tab) {
+            ['shops', 'map', 'add', 'feedback'].forEach(function (t) {
+                document.getElementById('p-' + t.replace('feedback', 'feedback')).classList.remove('on');
+                document.getElementById('tb-' + t.replace('feedback', 'feedback')).classList.remove('on');
+            });
+            // fix ids
+            ['shops', 'map', 'add', 'feedback'].forEach(function (id) {
+                var pane = document.getElementById('p-' + id);
+                var tb = document.getElementById('tb-' + id);
+                if (pane) pane.classList.remove('on');
+                if (tb) tb.classList.remove('on');
+            });
+
+            if (tab === 'add' && !isAdminLoggedIn) {
+                openGate(); return;
+            }
+            document.getElementById('p-' + tab).classList.add('on');
+            document.getElementById('tb-' + tab).classList.add('on');
+
+            if (tab === 'map' && !lmapReady) { initMap(); }
+        }
+
+        function refreshAddTabState() {
+            if (isAdminLoggedIn) {
+                document.getElementById('add-locked-msg').style.display = 'none';
+                document.getElementById('add-form-wrap').style.display = 'block';
+            } else {
+                document.getElementById('add-locked-msg').style.display = 'block';
+                document.getElementById('add-form-wrap').style.display = 'none';
+            }
+        }
+
+        // ═══════════════════ TIMING TABLE ════════════════
+        var DAYS_EN = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        var DAYS_KN = ['ಸೋಮ', 'ಮಂಗಳ', 'ಬುಧ', 'ಗುರು', 'ಶುಕ್ರ', 'ಶನಿ', 'ರವಿ'];
+
+        function buildTimingTable() {
+            var days = lang === 'kn' ? DAYS_KN : DAYS_EN;
+            var html = '';
+            DAYS_EN.forEach(function (code, i) {
+                var id = 'tc' + i;
+                var sun = (i === 6) ? ' sun' : '';
+                html += '<div class="trow" id="tr' + i + '">' +
+                    '<span class="day-lbl' + sun + '">' + days[i] + '</span>' +
+                    '<div class="t-times">' +
+                    '<input type="time" id="to' + i + '" value="09:00">' +
+                    '<span class="t-sep">—</span>' +
+                    '<input type="time" id="tc_' + i + '" value="21:00">' +
+                    '</div>' +
+                    '<label class="closed-lbl"><input type="checkbox" id="' + id + '" onchange="toggleClosed(' + i + ')"> ' + (lang === 'kn' ? 'ಮುಚ್ಚಿದೆ' : 'Closed') + '</label>' +
+                    '</div>';
+            });
+            document.getElementById('timing-table').innerHTML = html;
+        }
+
+        function toggleClosed(i) {
+            var cb = document.getElementById('tc' + i);
+            var row = document.getElementById('tr' + i);
+            if (cb.checked) row.classList.add('c-row'); else row.classList.remove('c-row');
+        }
+
+        function getTimings() {
+            var parts = [];
+            DAYS_EN.forEach(function (code, i) {
+                var cb = document.getElementById('tc' + i);
+                if (cb && cb.checked) { parts.push(code + ':closed'); }
+                else {
+                    var o = document.getElementById('to' + i), c = document.getElementById('tc_' + i);
+                    parts.push(code + ':' + (o ? o.value : '09:00') + '-' + (c ? c.value : '21:00'));
+                }
+            });
+            return parts.join('|');
+        }
+
+        // ═══════════════════ CATEGORY OTHER ══════════════
+        function handleCatChange(sel) {
+            var other = document.getElementById('fi-ct-other');
+            if (sel.value === 'other') { other.style.display = 'block'; } else { other.style.display = 'none'; }
+        }
+
+        // ═══════════════════ LOCATION DETECT (FORM) ══════
+        function detectFormLoc() {
+            var btn = document.getElementById('loc-det-btn');
+            btn.innerHTML = '⏳ ' + (lang === 'kn' ? 'ಪಡೆಯಲಾಗುತ್ತಿದೆ…' : 'Getting location…');
+            btn.disabled = true;
+            navigator.geolocation.getCurrentPosition(
+                async function (pos) {
+                    document.getElementById('fi-lat').value = pos.coords.latitude.toFixed(6);
+                    document.getElementById('fi-lng').value = pos.coords.longitude.toFixed(6);
+                    btn.innerHTML = '✅ ' + (lang === 'kn' ? 'ಸ್ಥಳ ಪಡೆದಿದೆ' : 'Location captured');
+                    btn.disabled = false;
+                    // Auto-fill address field using reverse geocode
+                    var adField = document.getElementById('fi-ad');
+                    if (!adField.value.trim()) {
+                        var geo = await liqReverseGeocode(pos.coords.latitude, pos.coords.longitude);
+                        if (geo) {
+                            var a = geo.address || {};
+                            var adParts = [];
+                            if (a.road || a.neighbourhood) adParts.push(a.road || a.neighbourhood);
+                            if (a.village || a.town || a.city) adParts.push(a.village || a.town || a.city);
+                            if (a.state_district) adParts.push(a.state_district);
+                            if (adParts.length) adField.value = adParts.join(', ');
+                            btn.innerHTML = '✅ ' + (lang === 'kn' ? 'ಸ್ಥಳ & ವಿಳಾಸ ಪಡೆದಿದೆ' : 'Location & address filled');
+                        }
+                    }
+                },
+                function () {
+                    btn.innerHTML = '❌ ' + (lang === 'kn' ? 'ಸ್ಥಳ ಸಿಗಲಿಲ್ಲ. ನಿರ್ದೇಶಾಂಕ ನಮೂದಿಸಿ' : 'Failed. Enter manually');
+                    btn.disabled = false;
+                }
+            );
+        }
+
+        // ═══════════════════ IMAGE PREVIEW ════════════════
+        function previewImg(inp) {
+            if (!inp.files || !inp.files[0]) return;
+            var reader = new FileReader();
+            var prev = document.getElementById('img-prev');
+            reader.onload = function (e) { prev.src = e.target.result; prev.style.display = 'block'; };
+            reader.readAsDataURL(inp.files[0]);
+        }
+
+        // ═══════════════════ SUBMIT SHOP ═════════════════
+        async function submitShop() {
+            var nm = document.getElementById('fi-nm').value.trim();
+            var ct = document.getElementById('fi-ct').value;
+            if (ct === 'other') ct = document.getElementById('fi-ct-other').value.trim();
+            var ph = document.getElementById('fi-ph').value.trim();
+            var ad = document.getElementById('fi-ad').value.trim();
+            var lat = parseFloat(document.getElementById('fi-lat').value);
+            var lng = parseFloat(document.getElementById('fi-lng').value);
+            var ex = document.getElementById('fi-ex').value.trim();
+            var timings = getTimings();
+
+            if (!nm) { showToast(lang === 'kn' ? 'ಅಂಗಡಿ ಹೆಸರು ಬೇಕು' : 'Shop name required'); return; }
+            if (!ct) { showToast(lang === 'kn' ? 'ವರ್ಗ ಆರಿಸಿ' : 'Select a category'); return; }
+            if (!ph || !/^\d{10}$/.test(ph)) { showToast(lang === 'kn' ? '10 ಅಂಕಿ ಫೋನ್ ನಂಬರ್ ಬೇಕು' : 'Enter valid 10-digit phone'); return; }
+            if (isNaN(lat) || isNaN(lng)) { showToast(lang === 'kn' ? 'ಸ್ಥಳ ಅಗತ್ಯ. GPS ಬಳಸಿ ಅಥವಾ ನಮೂದಿಸಿ' : 'Location required. Use GPS or enter manually'); return; }
+
+            var btn = document.getElementById('f-sub');
+            btn.textContent = lang === 'kn' ? 'ಸಲ್ಲಿಸಲಾಗುತ್ತಿದೆ…' : 'Submitting…';
+            btn.disabled = true;
+
+            var image_url = '';
+            var imgFile = document.getElementById('fi-img').files[0];
+
+            if (imgFile) {
+                if (USE_SUPABASE && SUPABASE_URL !== 'https://your-project.supabase.co') {
+                    try {
+                        document.getElementById('img-upload-status').textContent = lang === 'kn' ? 'ಫೋಟೊ ಅಪ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ…' : 'Uploading image…';
+                        image_url = await sbUploadImage(imgFile);
+                        document.getElementById('img-upload-status').textContent = '';
+                    } catch (e) {
+                        // fallback: store as data URL locally
+                        image_url = await toBase64(imgFile);
+                    }
+                } else {
+                    // Store base64 locally for demo
+                    image_url = await toBase64(imgFile);
+                }
+            }
+
+            var shop = {
+                id: 's' + Date.now(),
+                shop_name: nm, category: ct, phone: ph, address: ad,
+                latitude: lat, longitude: lng, image_url: image_url,
+                shop_timings: timings, extra_details: ex
+            };
+
+            if (USE_SUPABASE && SUPABASE_URL !== 'https://your-project.supabase.co') {
+                try {
+                    var saved = await sbFetch('shops', 'POST', { shop_name: nm, category: ct, phone: ph, address: ad, latitude: lat, longitude: lng, image_url: image_url, shop_timings: timings, extra_details: ex });
+                    if (saved && saved[0]) shop = saved[0];
+                } catch (e) { /* fallback to local */ }
+            }
+
+            shopList.push(shop);
+            saveShopsLocal();
+            renderCats(); doFilter();
+
+            // Reset form
+            ['fi-nm', 'fi-ph', 'fi-ad', 'fi-ex', 'fi-lat', 'fi-lng'].forEach(function (id) { document.getElementById(id).value = ''; });
+            document.getElementById('fi-ct').value = '';
+            document.getElementById('fi-ct-other').value = ''; document.getElementById('fi-ct-other').style.display = 'none';
+            document.getElementById('img-prev').style.display = 'none'; document.getElementById('fi-img').value = '';
+            buildTimingTable();
+
+            btn.textContent = t('fSub'); btn.disabled = false;
+            showToast(lang === 'kn' ? '✅ ಅಂಗಡಿ ಸಲ್ಲಿಸಲಾಗಿದೆ!' : '✅ Shop submitted successfully!');
+            switchTab('shops');
+        }
+
+        function toBase64(file) {
+            return new Promise(function (resolve) {
+                var r = new FileReader();
+                r.onload = function (e) { resolve(e.target.result); };
+                r.readAsDataURL(file);
+            });
+        }
+
+        // ═══════════════════ FEEDBACK ════════════════════
+        async function submitFeedback() {
+            var msg = document.getElementById('fb-msg').value.trim();
+            if (!msg) { showToast(lang === 'kn' ? 'ಸಂದೇಶ ನಮೂದಿಸಿ' : 'Enter a message'); return; }
+            var btn = document.getElementById('fb-btn');
+            btn.textContent = lang === 'kn' ? 'ಕಳಿಸಲಾಗುತ್ತಿದೆ…' : 'Sending…';
+            btn.disabled = true;
+
+            var fb = { id: 'f' + Date.now(), user_message: msg, created_at: new Date().toISOString() };
+
+            if (USE_SUPABASE && SUPABASE_URL !== 'https://your-project.supabase.co') {
+                try { await sbFetch('feedback', 'POST', { user_message: msg }); } catch (e) { }
+            }
+
+            fbList.push(fb);
+            localStorage.setItem('no_fb', JSON.stringify(fbList));
+            document.getElementById('fb-msg').value = '';
+            btn.textContent = t('fbBtn'); btn.disabled = false;
+            var ok = document.getElementById('fb-ok');
+            ok.textContent = t('fbOk'); ok.style.display = 'block';
+            setTimeout(function () { ok.style.display = 'none'; }, 4000);
+        }
+
+        // ═══════════════════ MAP (Leaflet + LocationIQ) ═══════════════
+        function initMap() {
+            lmapReady = true;
+
+            if (LOCATIONIQ_KEY === 'YOUR_LOCATIONIQ_KEY') {
+                setText('map-msg', lang === 'kn' ? 'LocationIQ key ಸೇರಿಸಿ config ನಲ್ಲಿ' : 'Add your LocationIQ key in config to enable the map');
+                return;
+            }
+
+            // Show map div, hide placeholder
+            var mapEl = document.getElementById('lmap');
+            mapEl.style.display = 'block';
+            document.getElementById('map-ph').style.display = 'none';
+
+            // Default center: user location or Hunsur
+            var centerLat = uLat || 12.2958;
+            var centerLng = uLng || 76.6394;
+
+            // Init Leaflet map
+            lmap = L.map('lmap', { zoomControl: true, attributionControl: true }).setView([centerLat, centerLng], 14);
+
+            // LocationIQ tile layer
+            L.tileLayer(
+                'https://{s}-tiles.locationiq.com/v3/streets/r/{z}/{x}/{y}.png?key=' + LOCATIONIQ_KEY,
+                {
+                    subdomains: ['us1', 'eu1'],
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="https://locationiq.com">LocationIQ</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                }
+            ).addTo(lmap);
+
+            // User location marker (blue dot)
+            if (uLat) {
+                var userIcon = L.divIcon({
+                    className: '',
+                    html: '<div style="width:16px;height:16px;background:#1565C0;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.4);"></div>',
+                    iconSize: [16, 16],
+                    iconAnchor: [8, 8]
+                });
+                L.marker([uLat, uLng], { icon: userIcon })
+                    .addTo(lmap)
+                    .bindPopup('<b>' + (lang === 'kn' ? 'ನೀವು ಇಲ್ಲಿದ್ದೀರಿ' : 'You are here') + '</b>');
+            }
+
+            // Shop markers (orange pin)
+            shopList.forEach(function (s) {
+                if (!s.latitude || !s.longitude) return;
+                var lat = parseFloat(s.latitude);
+                var lng = parseFloat(s.longitude);
+                if (isNaN(lat) || isNaN(lng)) return;
+
+                var shopIcon = L.divIcon({
+                    className: '',
+                    html: '<div style="width:28px;height:28px;background:var(--saffron);border:2px solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;"><span style="transform:rotate(45deg);font-size:13px;">🏪</span></div>',
+                    iconSize: [28, 28],
+                    iconAnchor: [10, 28],
+                    popupAnchor: [4, -28]
+                });
+
+                var popupHtml =
+                    '<div style="font-family:Poppins,sans-serif;min-width:160px;">' +
+                    '<b style="font-size:14px;">' + escHtml(s.shop_name) + '</b>' +
+                    (s.category ? '<br><span style="font-size:11px;color:#555;">' + escHtml(s.category) + '</span>' : '') +
+                    '<br><span style="font-size:12px;">📞 ' + escHtml(s.phone) + '</span>' +
+                    (s.address ? '<br><span style="font-size:11px;color:#777;">📍 ' + escHtml(s.address) + '</span>' : '') +
+                    '<br><a href="tel:' + escHtml(s.phone) + '" style="display:inline-block;margin-top:7px;background:#2E7D32;color:#fff;padding:5px 12px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:700;">📞 ' + (lang === 'kn' ? 'ಕರೆ ಮಾಡಿ' : 'Call') + '</a>' +
+                    '</div>';
+
+                L.marker([lat, lng], { icon: shopIcon })
+                    .addTo(lmap)
+                    .bindPopup(popupHtml);
+            });
+
+            // Force Leaflet to recalculate size (needed when tab is hidden on load)
+            setTimeout(function () { lmap.invalidateSize(); }, 100);
+        }
+
+        // ═══════════════════ ADMIN ════════════════════════
+        function openAdmin() {
+            document.getElementById('adm-login').style.display = 'block';
+            document.getElementById('adm-dash').style.display = 'none';
+            document.getElementById('adm-pw').value = '';
+            document.getElementById('adm-modal').classList.add('open');
+        }
+        function closeAdmin() { document.getElementById('adm-modal').classList.remove('open'); }
+
+        function doLogin() {
+            if (document.getElementById('adm-pw').value !== ADMIN_PASS) {
+                showToast(lang === 'kn' ? '❌ ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್' : '❌ Wrong password'); return;
+            }
+            isAdminLoggedIn = true;
+            refreshAddTabState();
+            document.getElementById('adm-login').style.display = 'none';
+            document.getElementById('adm-dash').style.display = 'block';
+            renderAdminDash();
+        }
+
+        function renderAdminDash() {
+            // Emergency section
+            var html = '';
+            emgList.forEach(function (e, i) {
+                html += '<div class="emg-card"><div class="emg-card-top">🚨 #' + (i + 1) + '</div>' +
+                    '<div class="emg-card-row">' +
+                    '<input type="text" id="en' + i + '" value="' + escHtml(e.name) + '" placeholder="Name">' +
+                    '<input type="text" id="enum' + i + '" value="' + escHtml(e.number) + '" placeholder="Number" inputmode="tel" style="max-width:100px">' +
+                    '<button class="save-btn" onclick="saveEmgItem(' + i + ')">💾 ' + (lang === 'kn' ? 'ಉಳಿಸಿ' : 'Save') + '</button>' +
+                    '<button class="del-btn-s" onclick="delEmg(' + i + ')">🗑️</button>' +
+                    '</div></div>';
+            });
+            document.getElementById('adm-emg-list').innerHTML = html;
+
+            // Shops section
+            setText('adm-sh-cnt', shopList.length);
+            var shtml = shopList.map(function (s, j) {
+                return '<div class="adm-shop-row"><div class="asi">' +
+                    '<div class="aname">' + escHtml(s.shop_name) + '</div>' +
+                    '<div class="asub">' + escHtml(s.category || '') + ' • 📞 ' + escHtml(s.phone) + '</div>' +
+                    (s.address ? '<div class="asub">📍 ' + escHtml(s.address) + '</div>' : '') +
+                    '</div>' +
+                    '<button class="adm-del" onclick="delShop(' + j + ')">🗑️ Del</button>' +
+                    '</div>';
+            }).join('') || '<p style="color:var(--text-light);font-size:13px">' + (lang === 'kn' ? 'ಅಂಗಡಿ ಇಲ್ಲ' : 'No shops yet') + '</p>';
+            document.getElementById('adm-sh-list').innerHTML = shtml;
+
+            // Feedback section
+            setText('adm-fb-cnt', fbList.length);
+            var fhtml = fbList.slice().reverse().map(function (f) {
+                return '<div class="fb-item">' + escHtml(f.user_message) + '<div class="fb-dt">' + new Date(f.created_at).toLocaleString() + '</div></div>';
+            }).join('') || '<p style="color:var(--text-light);font-size:13px">' + (lang === 'kn' ? 'ಪ್ರತಿಕ್ರಿಯೆ ಇಲ್ಲ' : 'No feedback yet') + '</p>';
+            document.getElementById('adm-fb-list').innerHTML = fhtml;
+        }
+
+        function saveEmgItem(i) {
+            var n = document.getElementById('en' + i).value.trim();
+            var num = document.getElementById('enum' + i).value.trim();
+            if (!n || !num) { showToast(lang === 'kn' ? 'ಹೆಸರು & ಸಂಖ್ಯೆ ಬೇಕು' : 'Name & number required'); return; }
+            emgList[i] = { name: n, number: num };
+            localStorage.setItem('no_emg', JSON.stringify(emgList));
+            renderEmg(); renderAdminDash();
+            showToast(lang === 'kn' ? '✅ ಉಳಿಸಲಾಯಿತು' : '✅ Saved');
+        }
+
+        function addEmg() {
+            var n = document.getElementById('new-emg-name').value.trim();
+            var num = document.getElementById('new-emg-num').value.trim();
+            if (!n || !num) { showToast(lang === 'kn' ? 'ಹೆಸರು & ಸಂಖ್ಯೆ ನಮೂದಿಸಿ' : 'Enter name & number'); return; }
+            emgList.push({ name: n, number: num });
+            localStorage.setItem('no_emg', JSON.stringify(emgList));
+            document.getElementById('new-emg-name').value = '';
+            document.getElementById('new-emg-num').value = '';
+            renderEmg(); renderAdminDash();
+            showToast(lang === 'kn' ? '✅ ಸೇರಿಸಲಾಯಿತು' : '✅ Added');
+        }
+
+        function delEmg(i) {
+            if (!confirm(lang === 'kn' ? 'ತೆಗೆದು ಹಾಕುವುದೇ?' : 'Remove this entry?')) return;
+            emgList.splice(i, 1);
+            localStorage.setItem('no_emg', JSON.stringify(emgList));
+            renderEmg(); renderAdminDash();
+        }
+
+        function delShop(i) {
+            if (!confirm(lang === 'kn' ? 'ಅಂಗಡಿ ಅಳಿಸುವುದೇ?' : 'Delete this shop?')) return;
+            shopList.splice(i, 1);
+            saveShopsLocal();
+            renderCats(); doFilter(); renderAdminDash();
+            showToast(lang === 'kn' ? '🗑️ ಅಳಿಸಲಾಯಿತು' : '🗑️ Deleted');
+        }
+
+        // ═══════════════════ GATE (Add tab lock) ═════════
+        function openGate() { document.getElementById('gate-modal').classList.add('open'); }
+        function closeGate() { document.getElementById('gate-modal').classList.remove('open'); }
+
+        function doGateLogin() {
+            var pw = document.getElementById('gate-pw').value;
+            if (pw !== ADMIN_PASS) {
+                document.getElementById('gate-err').style.display = 'block'; return;
+            }
+            document.getElementById('gate-err').style.display = 'none';
+            isAdminLoggedIn = true;
+            refreshAddTabState();
+            closeGate();
+            document.getElementById('p-add').classList.add('on');
+            document.getElementById('tb-add').classList.add('on');
+            // remove active from others
+            ['shops', 'map', 'feedback'].forEach(function (id) {
+                document.getElementById('p-' + id).classList.remove('on');
+                document.getElementById('tb-' + id).classList.remove('on');
+            });
+        }
+
+        // ═══════════════════ HELPERS ═════════════════════
+        function escHtml(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function showToast(msg) {
+            var el = document.getElementById('toast');
+            el.textContent = msg; el.classList.add('show');
+            setTimeout(function () { el.classList.remove('show'); }, 2800);
+        }
+
+        // Close modals on backdrop
+        document.getElementById('loc-modal').addEventListener('click', function (e) { if (e.target === this) closeLoc(); });
+        document.getElementById('gate-modal').addEventListener('click', function (e) { if (e.target === this) closeGate(); });
+        document.getElementById('adm-modal').addEventListener('click', function (e) {
+            if (e.target === this || e.target === document.querySelector('#adm-modal .back-btn')) closeAdmin();
+        });
+    </script>
+</body>
+
+</html>

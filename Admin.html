@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Admin – Namma Ooru</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .admin-layout {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #E0D0C0;
+        }
+
+        .admin-section h3 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1A1A1A;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-login-box {
+            max-width: 360px;
+            margin: 80px auto 0;
+            background: white;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .admin-login-box h2 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #E65100;
+            margin-bottom: 20px;
+        }
+
+        .admin-header {
+            background: linear-gradient(90deg, #E65100, #BF360C);
+            color: white;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header h1 {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .shop-admin-card {
+            background: #FFF8F0;
+            border: 1px solid #E0D0C0;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+
+        .shop-admin-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .shop-admin-card-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: #1A1A1A;
+            flex: 1;
+        }
+
+        .shop-admin-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .edit-btn {
+            background: #1565C0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #C62828;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .shop-admin-cat {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .feedback-admin-item {
+            background: #F3F4F6;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 8px;
+        }
+
+        .feedback-admin-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .search-log-item {
+            font-size: 13px;
+            padding: 8px 10px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .blocked-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #FFEBEE;
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+
+        .blocked-id {
+            font-size: 12px;
+            color: #555;
+            font-family: monospace;
+            word-break: break-all;
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .unblock-btn {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Baloo 2', sans-serif;
+        }
+
+        .block-input-wrap {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .block-input-wrap input {
+            flex: 1;
+        }
+
+        .block-btn {
+            background: #C62828;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 16px;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .emg-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .emg-row input {
+            flex: 1;
+        }
+
+        .tab-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 0;
+            background: white;
+            border-bottom: 2px solid #E0D0C0;
+            margin-bottom: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-nav-btn {
+            flex-shrink: 0;
+            padding: 12px 16px;
+            border: none;
+            background: none;
+            font-family: 'Baloo 2', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+
+        .tab-nav-btn.active {
+            color: #E65100;
+            border-bottom-color: #E65100;
+        }
+
+        .admin-tab {
+            display: none;
+        }
+
+        .admin-tab.active {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ADMIN LOGIN -->
+    <div id="adminLoginWrap">
+        <div class="admin-login-box">
+            <div style="font-size:48px;margin-bottom:8px;">👤</div>
+            <h2>Admin Panel</h2>
+            <p style="font-size:14px;color:#888;margin-bottom:20px;">Namma Ooru Management</p>
+            <label class="input-label" style="text-align:left;display:block;">Password</label>
+            <input type="password" id="adminPassInput" class="form-input" placeholder="Enter admin password"
+                style="margin-bottom:14px;" />
+            <button class="primary-btn" onclick="adminLogin()">Login as Admin</button>
+            <div id="adminLoginErr" class="error-msg hidden"></div>
+            <a href="index.html" class="link-btn" style="margin-top:10px;">← Back to App</a>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPanel" class="hidden">
+        <div class="admin-header">
+            <h1>🛠️ Admin Panel</h1>
+            <div style="display:flex;gap:8px;">
+                <a href="index.html" class="icon-btn" title="Back to App">🏘️</a>
+                <button class="icon-btn" onclick="adminLogout()" title="Logout">🚪</button>
+            </div>
+        </div>
+
+        <!-- TAB NAV -->
+        <div class="tab-nav">
+            <button class="tab-nav-btn active" onclick="switchAdminTab('shops')">🏪 Shops</button>
+            <button class="tab-nav-btn" onclick="switchAdminTab('notice')">📢 Notice</button>
+            <button class="tab-nav-btn" onclick="switchAdminTab('emergency')">🚨 Emergency</button>
+            <button class="tab-nav-btn" onclick="switchAdminTab('feedback')">💬 Feedback</button>
+            <button class="tab-nav-btn" onclick="switchAdminTab('searchlogs')">🔍 Searches</button>
+            <button class="tab-nav-btn" onclick="switchAdminTab('blocked')">🚫 Blocked</button>
+        </div>
+
+        <div class="admin-layout">
+
+            <!-- SHOPS TAB -->
+            <div id="atab-shops" class="admin-tab active">
+                <div class="admin-section">
+                    <h3>🏪 Manage Shops</h3>
+                    <a href="add.html" class="primary-btn"
+                        style="text-decoration:none;display:flex;margin-bottom:14px;">➕ Add New Shop</a>
+                    <div id="adminShopList">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NOTICE TAB -->
+            <div id="atab-notice" class="admin-tab">
+                <div class="admin-section">
+                    <h3>📢 Notice Board</h3>
+                    <div class="form-group">
+                        <label class="form-label">Current Notice</label>
+                        <textarea id="noticeInput" class="form-input" rows="4"
+                            placeholder="Enter notice message..."></textarea>
+                    </div>
+                    <button class="primary-btn" onclick="updateNotice()">Update Notice</button>
+                    <button class="secondary-btn" onclick="clearNotice()" style="margin-top:8px;">Clear Notice</button>
+                    <div id="noticeMsg" class="success-msg hidden"></div>
+                </div>
+            </div>
+
+            <!-- EMERGENCY TAB -->
+            <div id="atab-emergency" class="admin-tab">
+                <div class="admin-section">
+                    <h3>🚨 Emergency Numbers</h3>
+                    <div id="emergencyAdminList"></div>
+                    <div style="margin-top:14px;">
+                        <h4 style="font-size:14px;font-weight:700;margin-bottom:8px;">Add New Number</h4>
+                        <div class="emg-row">
+                            <input type="text" id="newEmgName" class="form-input" placeholder="Name (e.g. Ambulance)" />
+                            <input type="text" id="newEmgNumber" class="form-input" placeholder="Number" />
+                            <input type="text" id="newEmgIcon" class="form-input" placeholder="Icon"
+                                style="max-width:70px;" />
+                        </div>
+                        <button class="primary-btn" onclick="addEmergencyNumber()">Add Number</button>
+                    </div>
+                    <div id="emgMsg" class="success-msg hidden"></div>
+                </div>
+            </div>
+
+            <!-- FEEDBACK TAB -->
+            <div id="atab-feedback" class="admin-tab">
+                <div class="admin-section">
+                    <h3>💬 User Feedback</h3>
+                    <div id="adminFeedbackList">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH LOGS TAB -->
+            <div id="atab-searchlogs" class="admin-tab">
+                <div class="admin-section">
+                    <h3>🔍 Search Logs</h3>
+                    <div id="adminSearchLogs">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOCKED USERS TAB -->
+            <div id="atab-blocked" class="admin-tab">
+                <div class="admin-section">
+                    <h3>🚫 Blocked Devices</h3>
+                    <div class="block-input-wrap">
+                        <input type="text" id="blockDeviceId" class="form-input"
+                            placeholder="Enter Device ID to block" />
+                        <button class="block-btn" onclick="blockDevice()">Block</button>
+                    </div>
+                    <p style="font-size:12px;color:#888;margin-bottom:12px;">💡 Device IDs appear in search logs and
+                        call logs</p>
+                    <div id="blockedList">
+                        <div class="loading-state">
+                            <div class="spinner"></div>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- EDIT SHOP MODAL -->
+    <div id="editShopModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>Edit Shop</h2>
+                <button class="modal-close" onclick="closeEditModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editShopId" />
+                <div class="form-group">
+                    <label class="form-label">Shop Name *</label>
+                    <input type="text" id="editShopName" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category *</label>
+                    <input type="text" id="editShopCategory" class="form-input" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone *</label>
+                    <input type="tel" id="editShopPhone" class="form-input" maxlength="10" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address *</label>
+                    <textarea id="editShopAddress" class="form-input" rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Extra Details</label>
+                    <textarea id="editShopExtra" class="form-input" rows="2"></textarea>
+                </div>
+                <div id="editShopErr" class="error-msg hidden"></div>
+                <button class="primary-btn" onclick="saveEditShop()">💾 Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ====== CONFIG (same as script.js) ====== */
+        const CONFIG = {
+            SUPABASE_URL: 'YOUR_SUPABASE_URL',
+            SUPABASE_KEY: 'YOUR_SUPABASE_ANON_KEY',
+            ADMIN_PASSWORD: 'nammaooru@admin',
+            NOTICE_PASSWORD: 'notice',
+            DEMO_MODE: true
+        };
+
+        const CAT_ICONS = { Grocery: '🛒', Medical: '💊', Hardware: '🔨', Vegetable: '🥦', Dairy: '🥛', Tailoring: '🧵', Electrical: '⚡', Plumber: '🔧', Labour: '👷', Mechanic: '🔩', Hotel: '🍛', Salon: '✂️', Other: '🏪' };
+
+        let sb = null;
+        let adminShops = [];
+        let emergencyNumbers = [];
+        let blockedDevices = [];
+
+        const DEMO_SHOPS = [
+            { id: 1, name: 'Raju Grocery Store', category: 'Grocery', phone: '9876543210', address: 'Main Road, Near Bus Stand', extra: 'Fresh vegetables daily' },
+            { id: 2, name: 'Lakshmi Medical Store', category: 'Medical', phone: '9845012345', address: 'Gandhi Nagar', extra: 'All medicines' },
+            { id: 3, name: 'Suresh Hardware', category: 'Hardware', phone: '9900112233', address: 'Old Market Street', extra: 'Tools and materials' },
+        ];
+        const DEMO_EMERGENCY = [
+            { id: 1, name: 'Ambulance', number: '108', icon: '🚑' },
+            { id: 2, name: 'Police', number: '100', icon: '🚔' },
+            { id: 3, name: 'Fire', number: '101', icon: '🔥' },
+        ];
+        const DEMO_FEEDBACK = [
+            { id: 1, text: 'Very useful app!', rating: 5, device_id: 'dev_abc', created_at: new Date(Date.now() - 86400000).toISOString() },
+            { id: 2, text: 'Good collection.', rating: 4, device_id: 'dev_xyz', created_at: new Date(Date.now() - 172800000).toISOString() },
+        ];
+        const DEMO_LOGS = [
+            { id: 1, query: 'grocery', device_id: 'dev_abc', created_at: new Date().toISOString() },
+            { id: 2, query: 'medical', device_id: 'dev_xyz', created_at: new Date(Date.now() - 3600000).toISOString() },
+        ];
+
+        function initSupabase() {
+            if (CONFIG.DEMO_MODE) return null;
+            try { return supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY); } catch (e) { return null; }
+        }
+
+        /* ====== ADMIN LOGIN ====== */
+        function adminLogin() {
+            const pass = document.getElementById('adminPassInput').value;
+            const errEl = document.getElementById('adminLoginErr');
+            if (pass === CONFIG.ADMIN_PASSWORD) {
+                sessionStorage.setItem('admin_authed', '1');
+                document.getElementById('adminLoginWrap').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadAllAdminData();
+            } else {
+                errEl.textContent = 'Incorrect password.';
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem('admin_authed');
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.getElementById('adminLoginWrap').classList.remove('hidden');
+            document.getElementById('adminPassInput').value = '';
+        }
+
+        /* ====== TAB SWITCHING ====== */
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('atab-' + tab).classList.add('active');
+            const btns = document.querySelectorAll('.tab-nav-btn');
+            const tabNames = ['shops', 'notice', 'emergency', 'feedback', 'searchlogs', 'blocked'];
+            const idx = tabNames.indexOf(tab);
+            if (btns[idx]) btns[idx].classList.add('active');
+        }
+
+        /* ====== LOAD ALL ====== */
+        async function loadAllAdminData() {
+            await Promise.all([
+                loadAdminShops(),
+                loadAdminNotice(),
+                loadEmergencyAdmin(),
+                loadAdminFeedback(),
+                loadSearchLogs(),
+                loadBlockedDevices()
+            ]);
+        }
+
+        /* ====== SHOPS ====== */
+        async function loadAdminShops() {
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('shops').select('*').order('name');
+                adminShops = data || [];
+            } else {
+                adminShops = [...DEMO_SHOPS];
+            }
+            renderAdminShops();
+        }
+
+        function renderAdminShops() {
+            const list = document.getElementById('adminShopList');
+            if (!adminShops.length) {
+                list.innerHTML = '<p style="text-align:center;color:#888;">No shops yet.</p>';
+                return;
+            }
+            list.innerHTML = adminShops.map(s => `
+    <div class="shop-admin-card">
+      <div class="shop-admin-card-top">
+        <div>
+          <div class="shop-admin-card-name">${(CAT_ICONS[s.category] || '🏪')} ${s.name}</div>
+          <div class="shop-admin-cat">${s.category} • ${s.phone} • ${s.address ? s.address.substring(0, 40) : ''}</div>
+        </div>
+        <div class="shop-admin-actions">
+          <button class="edit-btn" onclick="openEditShop(${s.id})">✏️</button>
+          <button class="delete-btn" onclick="deleteShop(${s.id},'${s.name}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+        }
+
+        function openEditShop(id) {
+            const shop = adminShops.find(s => s.id === id);
+            if (!shop) return;
+            document.getElementById('editShopId').value = id;
+            document.getElementById('editShopName').value = shop.name;
+            document.getElementById('editShopCategory').value = shop.category;
+            document.getElementById('editShopPhone').value = shop.phone;
+            document.getElementById('editShopAddress').value = shop.address;
+            document.getElementById('editShopExtra').value = shop.extra || '';
+            document.getElementById('editShopErr').classList.add('hidden');
+            document.getElementById('editShopModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editShopModal').classList.add('hidden');
+        }
+
+        async function saveEditShop() {
+            const id = parseInt(document.getElementById('editShopId').value);
+            const name = document.getElementById('editShopName').value.trim();
+            const category = document.getElementById('editShopCategory').value.trim();
+            const phone = document.getElementById('editShopPhone').value.trim();
+            const address = document.getElementById('editShopAddress').value.trim();
+            const extra = document.getElementById('editShopExtra').value.trim();
+            const errEl = document.getElementById('editShopErr');
+
+            if (!name || !category || !phone || !address) {
+                errEl.textContent = 'Fill all required fields.';
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { error } = await sb.from('shops').update({ name, category, phone, address, extra }).eq('id', id);
+                if (error) { errEl.textContent = error.message; errEl.classList.remove('hidden'); return; }
+            } else {
+                const idx = adminShops.findIndex(s => s.id === id);
+                if (idx > -1) adminShops[idx] = { ...adminShops[idx], name, category, phone, address, extra };
+            }
+            closeEditModal();
+            renderAdminShops();
+            alert('✅ Shop updated!');
+        }
+
+        async function deleteShop(id, name) {
+            if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('shops').delete().eq('id', id);
+            } else {
+                adminShops = adminShops.filter(s => s.id !== id);
+            }
+            renderAdminShops();
+            alert('🗑️ Shop deleted.');
+        }
+
+        /* ====== NOTICE ====== */
+        async function loadAdminNotice() {
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('notice').select('*').eq('active', true).single();
+                if (data) document.getElementById('noticeInput').value = data.message || '';
+            }
+        }
+
+        async function updateNotice() {
+            const msg = document.getElementById('noticeInput').value.trim();
+            const el = document.getElementById('noticeMsg');
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('notice').delete().neq('id', 0);
+                if (msg) await sb.from('notice').insert({ message: msg, active: true });
+            }
+            el.textContent = '✅ Notice updated!';
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 2500);
+        }
+
+        async function clearNotice() {
+            document.getElementById('noticeInput').value = '';
+            if (!CONFIG.DEMO_MODE && sb) await sb.from('notice').delete().neq('id', 0);
+            const el = document.getElementById('noticeMsg');
+            el.textContent = '✅ Notice cleared!';
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 2500);
+        }
+
+        /* ====== EMERGENCY ====== */
+        async function loadEmergencyAdmin() {
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('emergency_numbers').select('*').order('id');
+                emergencyNumbers = data || [];
+            } else {
+                emergencyNumbers = [...DEMO_EMERGENCY];
+            }
+            renderEmergencyAdmin();
+        }
+
+        function renderEmergencyAdmin() {
+            const list = document.getElementById('emergencyAdminList');
+            list.innerHTML = emergencyNumbers.map(n => `
+    <div class="emg-row">
+      <input type="text" value="${n.icon || '📞'}" class="form-input" style="max-width:60px;" id="emg_icon_${n.id}"/>
+      <input type="text" value="${n.name}" class="form-input" id="emg_name_${n.id}"/>
+      <input type="text" value="${n.number}" class="form-input" id="emg_num_${n.id}"/>
+      <button class="edit-btn" onclick="updateEmergency(${n.id})">💾</button>
+      <button class="delete-btn" onclick="deleteEmergency(${n.id})">🗑️</button>
+    </div>`).join('');
+        }
+
+        async function updateEmergency(id) {
+            const name = document.getElementById('emg_name_' + id).value.trim();
+            const number = document.getElementById('emg_num_' + id).value.trim();
+            const icon = document.getElementById('emg_icon_' + id).value.trim();
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('emergency_numbers').update({ name, number, icon }).eq('id', id);
+            } else {
+                const idx = emergencyNumbers.findIndex(n => n.id === id);
+                if (idx > -1) emergencyNumbers[idx] = { ...emergencyNumbers[idx], name, number, icon };
+            }
+            const el = document.getElementById('emgMsg');
+            el.textContent = '✅ Updated!';
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 2000);
+        }
+
+        async function deleteEmergency(id) {
+            if (!confirm('Delete this emergency number?')) return;
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('emergency_numbers').delete().eq('id', id);
+            } else {
+                emergencyNumbers = emergencyNumbers.filter(n => n.id !== id);
+            }
+            renderEmergencyAdmin();
+        }
+
+        async function addEmergencyNumber() {
+            const name = document.getElementById('newEmgName').value.trim();
+            const number = document.getElementById('newEmgNumber').value.trim();
+            const icon = document.getElementById('newEmgIcon').value.trim() || '📞';
+            if (!name || !number) { alert('Enter name and number.'); return; }
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('emergency_numbers').insert({ name, number, icon });
+                await loadEmergencyAdmin();
+            } else {
+                emergencyNumbers.push({ id: Date.now(), name, number, icon });
+                renderEmergencyAdmin();
+            }
+            document.getElementById('newEmgName').value = '';
+            document.getElementById('newEmgNumber').value = '';
+            document.getElementById('newEmgIcon').value = '';
+        }
+
+        /* ====== FEEDBACK ====== */
+        async function loadAdminFeedback() {
+            let items;
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('feedback').select('*').order('created_at', { ascending: false });
+                items = data || [];
+            } else {
+                items = DEMO_FEEDBACK;
+            }
+            const list = document.getElementById('adminFeedbackList');
+            if (!items.length) {
+                list.innerHTML = '<p style="text-align:center;color:#888;">No feedback yet.</p>';
+                return;
+            }
+            list.innerHTML = items.map(f => `
+    <div class="feedback-admin-item">
+      <div class="feedback-admin-top">
+        <span>${'⭐'.repeat(f.rating || 0)}</span>
+        <span style="font-size:11px;color:#888;">${new Date(f.created_at).toLocaleDateString()}</span>
+      </div>
+      <div style="font-size:14px;color:#333;">${f.text}</div>
+      ${f.device_id ? `<div style="font-size:11px;color:#aaa;margin-top:4px;">Device: ${f.device_id}</div>` : ''}
+    </div>`).join('');
+        }
+
+        /* ====== SEARCH LOGS ====== */
+        async function loadSearchLogs() {
+            let logs;
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('search_logs').select('*').order('created_at', { ascending: false }).limit(50);
+                logs = data || [];
+            } else {
+                logs = DEMO_LOGS;
+            }
+            const list = document.getElementById('adminSearchLogs');
+            if (!logs.length) {
+                list.innerHTML = '<p style="text-align:center;color:#888;">No searches yet.</p>';
+                return;
+            }
+            list.innerHTML = logs.map(l => `
+    <div class="search-log-item">
+      <span>🔍 <b>${l.query}</b></span>
+      <span style="font-size:11px;color:#888;">${new Date(l.created_at).toLocaleString()}</span>
+    </div>`).join('');
+        }
+
+        /* ====== BLOCK USERS ====== */
+        async function loadBlockedDevices() {
+            let devices;
+            if (!CONFIG.DEMO_MODE && sb) {
+                const { data } = await sb.from('blocked_devices').select('*').order('created_at', { ascending: false });
+                devices = data || [];
+            } else {
+                devices = [];
+            }
+            blockedDevices = devices;
+            renderBlockedList();
+        }
+
+        function renderBlockedList() {
+            const list = document.getElementById('blockedList');
+            if (!blockedDevices.length) {
+                list.innerHTML = '<p style="text-align:center;color:#888;">No blocked devices.</p>';
+                return;
+            }
+            list.innerHTML = blockedDevices.map(d => `
+    <div class="blocked-item">
+      <span class="blocked-id">${d.device_id}</span>
+      <button class="unblock-btn" onclick="unblockDevice('${d.device_id}')">✅ Unblock</button>
+    </div>`).join('');
+        }
+
+        async function blockDevice() {
+            const id = document.getElementById('blockDeviceId').value.trim();
+            if (!id) { alert('Enter a device ID.'); return; }
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('blocked_devices').insert({ device_id: id });
+                await loadBlockedDevices();
+            } else {
+                blockedDevices.unshift({ device_id: id, created_at: new Date().toISOString() });
+                renderBlockedList();
+            }
+            document.getElementById('blockDeviceId').value = '';
+            alert('🚫 Device blocked.');
+        }
+
+        async function unblockDevice(deviceId) {
+            if (!confirm('Unblock this device?')) return;
+            if (!CONFIG.DEMO_MODE && sb) {
+                await sb.from('blocked_devices').delete().eq('device_id', deviceId);
+                await loadBlockedDevices();
+            } else {
+                blockedDevices = blockedDevices.filter(d => d.device_id !== deviceId);
+                renderBlockedList();
+            }
+        }
+
+        /* ====== BOOT ====== */
+        window.addEventListener('DOMContentLoaded', () => {
+            sb = initSupabase();
+            if (sessionStorage.getItem('admin_authed') === '1') {
+                document.getElementById('adminLoginWrap').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                loadAllAdminData();
+            }
+            document.getElementById('adminPassInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') adminLogin();
+            });
+        });
+    </script>
+</body>
+
+</html>

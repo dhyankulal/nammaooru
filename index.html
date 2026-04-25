@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Namma Ooru – Your Local Guide</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <!-- BLOCKED SCREEN -->
+    <div id="blockedScreen" class="fullscreen-overlay hidden">
+        <div class="blocked-box">
+            <div class="blocked-icon">🚫</div>
+            <h2 id="blockedTitle">Access Blocked</h2>
+            <p id="blockedMsg">Your device has been blocked by admin.</p>
+        </div>
+    </div>
+
+    <!-- LANGUAGE SELECTION -->
+    <div id="langScreen" class="fullscreen-overlay">
+        <div class="lang-box">
+            <div class="app-logo">🏘️</div>
+            <h1 class="app-name">Namma Ooru</h1>
+            <p class="app-tagline">Your Local Guide</p>
+            <p class="lang-prompt">Choose your language / ಭಾಷೆ ಆಯ್ಕೆ ಮಾಡಿ</p>
+            <div class="lang-buttons">
+                <button class="lang-btn" onclick="selectLang('en')">
+                    <span class="lang-flag">🇮🇳</span>
+                    <span>English</span>
+                </button>
+                <button class="lang-btn" onclick="selectLang('kn')">
+                    <span class="lang-flag">ಕ</span>
+                    <span>ಕನ್ನಡ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="fullscreen-overlay hidden">
+        <div class="login-box">
+            <div class="app-logo">🏘️</div>
+            <h1 class="app-name">Namma Ooru</h1>
+            <p class="app-tagline" id="loginTagline">Your Local Guide</p>
+
+            <div id="demoModeBanner" class="demo-banner hidden">
+                <span>⚡ Demo Mode – No backend needed</span>
+            </div>
+
+            <div id="phoneStep">
+                <label id="phoneLabel" class="input-label">Phone Number</label>
+                <div class="phone-input-wrap">
+                    <span class="country-code">+91</span>
+                    <input type="tel" id="phoneInput" maxlength="10" placeholder="9876543210" inputmode="numeric" />
+                </div>
+                <button class="primary-btn" id="sendOtpBtn" onclick="sendOTP()">
+                    <span id="sendOtpText">Send OTP</span>
+                    <span id="sendOtpLoader" class="btn-loader hidden">⏳</span>
+                </button>
+                <div id="demoLoginBtn" class="demo-login-section hidden">
+                    <p class="or-text">— OR —</p>
+                    <button class="secondary-btn" onclick="demoLogin()">Continue as Guest (Demo)</button>
+                </div>
+            </div>
+
+            <div id="otpStep" class="hidden">
+                <p id="otpSentMsg" class="otp-sent-msg">OTP sent to +91 <span id="otpPhone"></span></p>
+                <label id="otpLabel" class="input-label">Enter OTP</label>
+                <input type="tel" id="otpInput" maxlength="6" placeholder="123456" inputmode="numeric"
+                    class="otp-input" />
+                <button class="primary-btn" id="verifyOtpBtn" onclick="verifyOTP()">
+                    <span id="verifyOtpText">Verify OTP</span>
+                    <span id="verifyOtpLoader" class="btn-loader hidden">⏳</span>
+                </button>
+                <button class="link-btn" onclick="backToPhone()" id="backBtn">← Change Number</button>
+            </div>
+
+            <div id="loginError" class="error-msg hidden"></div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" class="hidden">
+
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-left">
+                <span class="header-logo">🏘️</span>
+                <span class="header-title">Namma Ooru</span>
+            </div>
+            <div class="header-right">
+                <button class="icon-btn" onclick="openAddShop()" title="Add Shop" id="addShopBtn">➕</button>
+                <a href="admin.html" class="icon-btn" title="Admin">👤</a>
+                <button class="icon-btn" onclick="logout()" title="Logout" id="logoutBtn">🚪</button>
+            </div>
+        </header>
+
+        <!-- EMERGENCY STRIP -->
+        <div class="emergency-strip" id="emergencyStrip">
+            <span class="emergency-label">🚨</span>
+            <div class="emergency-numbers" id="emergencyNumbers">
+                <a href="tel:108" class="emergency-btn">🚑 108</a>
+                <a href="tel:100" class="emergency-btn">🚔 100</a>
+                <a href="tel:101" class="emergency-btn">🔥 101</a>
+            </div>
+        </div>
+
+        <!-- NOTICE BOARD -->
+        <div class="notice-board" id="noticeBoard">
+            <span class="notice-icon">📢</span>
+            <span class="notice-text" id="noticeText">No notices</span>
+        </div>
+
+        <!-- LOCATION BAR -->
+        <div class="location-bar" id="locationBar">
+            <span class="loc-icon">📍</span>
+            <span id="locationText">Getting location…</span>
+            <button class="loc-refresh-btn" onclick="getUserLocation()">🔄</button>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-wrap">
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search shops, services..." oninput="handleSearch()"
+                    autocomplete="off" />
+                <button class="clear-search hidden" id="clearSearch" onclick="clearSearchInput()">✕</button>
+            </div>
+        </div>
+
+        <!-- CATEGORY CHIPS -->
+        <div class="category-strip" id="categoryStrip">
+            <button class="chip active" onclick="filterCategory('all')" data-cat="all">All</button>
+        </div>
+
+        <!-- TABS -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="shops" onclick="switchTab('shops')">
+                <span>🏪</span><span id="tabShops">Shops</span>
+            </button>
+            <button class="tab-btn" data-tab="map" onclick="switchTab('map')">
+                <span>🗺️</span><span id="tabMap">Map</span>
+            </button>
+            <button class="tab-btn" data-tab="feedback" onclick="switchTab('feedback')">
+                <span>💬</span><span id="tabFeedback">Feedback</span>
+            </button>
+        </div>
+
+        <!-- SHOPS TAB -->
+        <div id="tab-shops" class="tab-content active">
+            <div id="shopsList" class="shops-list">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading shops...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAP TAB -->
+        <div id="tab-map" class="tab-content hidden">
+            <div id="mapContainer" style="height:calc(100vh - 280px);"></div>
+        </div>
+
+        <!-- FEEDBACK TAB -->
+        <div id="tab-feedback" class="tab-content hidden">
+            <div class="feedback-form-wrap">
+                <h3 id="feedbackTitle">Send Feedback</h3>
+                <textarea id="feedbackText" rows="4" placeholder="Your feedback..."
+                    class="feedback-textarea"></textarea>
+                <div class="rating-wrap">
+                    <span id="ratingLabel">Rating:</span>
+                    <div class="stars" id="starRating">
+                        <span class="star" data-val="1" onclick="setRating(1)">⭐</span>
+                        <span class="star" data-val="2" onclick="setRating(2)">⭐</span>
+                        <span class="star" data-val="3" onclick="setRating(3)">⭐</span>
+                        <span class="star" data-val="4" onclick="setRating(4)">⭐</span>
+                        <span class="star" data-val="5" onclick="setRating(5)">⭐</span>
+                    </div>
+                </div>
+                <button class="primary-btn" onclick="submitFeedback()" id="submitFeedbackBtn">Submit Feedback</button>
+                <div id="feedbackMsg" class="success-msg hidden"></div>
+            </div>
+            <div id="feedbackList" class="feedback-list"></div>
+        </div>
+
+    </div>
+
+    <!-- ADD SHOP MODAL -->
+    <div id="addShopModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="addShopTitle">Add New Shop</h2>
+                <button class="modal-close" onclick="closeAddShop()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- Admin verify for add -->
+                <div id="addAdminVerify">
+                    <p class="admin-verify-msg">Enter admin password to add shop</p>
+                    <input type="password" id="addAdminPass" placeholder="Admin Password" class="form-input" />
+                    <button class="primary-btn" onclick="verifyAddAdmin()">Verify</button>
+                    <div id="addAdminError" class="error-msg hidden"></div>
+                </div>
+                <div id="addShopForm" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Shop Name *</label>
+                        <input type="text" id="shopName" class="form-input" placeholder="e.g. Raju Grocery" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category *</label>
+                        <select id="shopCatSelect" class="form-input" onchange="checkCustomCat()">
+                            <option value="">Select Category</option>
+                            <option value="Grocery">Grocery</option>
+                            <option value="Medical">Medical / Pharmacy</option>
+                            <option value="Hardware">Hardware</option>
+                            <option value="Vegetable">Vegetable / Fruit</option>
+                            <option value="Dairy">Dairy / Milk</option>
+                            <option value="Tailoring">Tailoring</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Plumber">Plumber</option>
+                            <option value="Labour">Labour</option>
+                            <option value="Mechanic">Mechanic / Auto</option>
+                            <option value="Hotel">Hotel / Tiffin</option>
+                            <option value="Salon">Salon / Barber</option>
+                            <option value="Other">Other (type below)</option>
+                        </select>
+                        <input type="text" id="shopCatCustom" class="form-input hidden"
+                            placeholder="Type custom category" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" id="shopPhone" class="form-input" placeholder="9876543210" maxlength="10" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Address *</label>
+                        <textarea id="shopAddress" class="form-input" rows="2" placeholder="Shop address..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Timings</label>
+                        <div id="timingsGrid" class="timings-grid">
+                            <!-- Days filled by JS -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Extra Details</label>
+                        <textarea id="shopExtra" class="form-input" rows="2" placeholder="Any extra info..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Shop Image</label>
+                        <input type="file" id="shopImage" accept="image/*" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Location</label>
+                        <div class="loc-detect-wrap">
+                            <button class="secondary-btn small" onclick="detectShopLocation()">📍 Auto Detect</button>
+                            <span id="shopLocStatus">Not set</span>
+                        </div>
+                        <div class="manual-loc">
+                            <input type="number" id="shopLat" class="form-input half" placeholder="Latitude"
+                                step="any" />
+                            <input type="number" id="shopLng" class="form-input half" placeholder="Longitude"
+                                step="any" />
+                        </div>
+                    </div>
+                    <div id="addShopError" class="error-msg hidden"></div>
+                    <button class="primary-btn full-width" onclick="submitShop()" id="submitShopBtn">
+                        <span id="submitShopText">Add Shop</span>
+                        <span id="submitShopLoader" class="btn-loader hidden">⏳</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SHOP DETAIL MODAL -->
+    <div id="shopDetailModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="detailShopName">Shop Name</h2>
+                <button class="modal-close" onclick="closeShopDetail()">✕</button>
+            </div>
+            <div class="modal-body" id="shopDetailBody">
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>Add Shop – Namma Ooru</title>
+    <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background: #FFF8F0;
+        }
+
+        .add-page-header {
+            background: linear-gradient(90deg, #E65100, #BF360C);
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-page-header h1 {
+            font-size: 18px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .add-page-body {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+
+        .add-form-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-divider {
+            font-size: 13px;
+            font-weight: 800;
+            color: #E65100;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 20px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #FFE0CC;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #FFE0CC;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E65100, #FF8A50);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 10px;
+            display: none;
+            border: 2px solid #E0D0C0;
+        }
+
+        .char-count {
+            font-size: 11px;
+            color: #aaa;
+            text-align: right;
+            margin-top: 3px;
+        }
+
+        .map-preview {
+            height: 180px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+            border: 2px solid #E0D0C0;
+            display: none;
+        }
+
+        .success-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-screen .success-icon {
+            font-size: 72px;
+            margin-bottom: 16px;
+            display: block;
+            animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .success-screen h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2E7D32;
+            margin-bottom: 8px;
+        }
+
+        .success-screen p {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 24px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+
+<body>
+
+    <div class="add-page-header">
+        <h1>➕ Add New Shop</h1>
+        <a href="admin.html" class="icon-btn">← Back</a>
+    </div>
+
+    <div class="add-page-body">
+
+        <!-- PROGRESS -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:10%"></div>
+        </div>
+
+        <div class="add-form-card" id="addFormCard">
+
+            <!-- SUCCESS STATE -->
+            <div id="successState" class="success-screen hidden">
+                <span class="success-icon">🎉</span>
+                <h2>Shop Added!</h2>
+                <p>The shop has been successfully added to Namma Ooru.</p>
+                <button class="primary-btn" onclick="resetForm()">➕ Add Another Shop</button>
+                <a href="index.html" class="secondary-btn"
+                    style="display:block;margin-top:8px;text-decoration:none;text-align:center;padding:13px;">🏘️ Go to
+                    App</a>
+                <a href="admin.html" class="link-btn" style="margin-top:8px;">← Back to Admin</a>
+            </div>
+
+            <!-- FORM -->
+            <div id="theForm">
+
+                <div class="section-divider">📋 Basic Information</div>
+
+                <div class="form-group">
+                    <label class="form-label">Shop Name *</label>
+                    <input type="text" id="shopName" class="form-input" placeholder="e.g. Raju Grocery Store"
+                        maxlength="80" oninput="updateProgress(); updateCharCount(this,'nameCount',80)" />
+                    <div class="char-count" id="nameCount">0/80</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Category *</label>
+                    <select id="shopCatSelect" class="form-input" onchange="checkCustomCat(); updateProgress()">
+                        <option value="">-- Select Category --</option>
+                        <option value="Grocery">🛒 Grocery</option>
+                        <option value="Medical">💊 Medical / Pharmacy</option>
+                        <option value="Hardware">🔨 Hardware</option>
+                        <option value="Vegetable">🥦 Vegetable / Fruit</option>
+                        <option value="Dairy">🥛 Dairy / Milk</option>
+                        <option value="Tailoring">🧵 Tailoring</option>
+                        <option value="Electrical">⚡ Electrical</option>
+                        <option value="Plumber">🔧 Plumber</option>
+                        <option value="Labour">👷 Labour / Daily Work</option>
+                        <option value="Mechanic">🔩 Mechanic / Auto</option>
+                        <option value="Hotel">🍛 Hotel / Tiffin Centre</option>
+                        <option value="Salon">✂️ Salon / Barber</option>
+                        <option value="Other">✏️ Other (custom)</option>
+                    </select>
+                    <input type="text" id="shopCatCustom" class="form-input hidden" placeholder="Type your category"
+                        style="margin-top:8px;" oninput="updateProgress()" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number *</label>
+                    <div class="phone-input-wrap">
+                        <span class="country-code">+91</span>
+                        <input type="tel" id="shopPhone" maxlength="10" placeholder="9876543210" inputmode="numeric"
+                            oninput="updateProgress()" />
+                    </div>
+                </div>
+
+                <div class="section-divider">📍 Location & Address</div>
+
+                <div class="form-group">
+                    <label class="form-label">Address *</label>
+                    <textarea id="shopAddress" class="form-input" rows="3"
+                        placeholder="Full address including landmark, village/town..." maxlength="200"
+                        oninput="updateProgress(); updateCharCount(this,'addrCount',200)"></textarea>
+                    <div class="char-count" id="addrCount">0/200</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">GPS Location</label>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
+                        <button type="button" class="secondary-btn small" onclick="autoDetectLocation()">📍 Auto
+                            Detect</button>
+                        <button type="button" class="secondary-btn small" onclick="showManualLocation()">✏️ Manual
+                            Entry</button>
+                        <span id="locStatusText" style="font-size:13px;color:#888;">Not set</span>
+                    </div>
+                    <div id="manualLocWrap" class="hidden">
+                        <div style="display:flex;gap:8px;">
+                            <input type="number" id="shopLat" class="form-input" placeholder="Latitude (e.g. 15.2706)"
+                                step="any" />
+                            <input type="number" id="shopLng" class="form-input" placeholder="Longitude (e.g. 76.3998)"
+                                step="any" />
+                        </div>
+                    </div>
+                    <div id="mapPreview" class="map-preview"></div>
+                </div>
+
+                <div class="section-divider">🕐 Shop Timings</div>
+                <div id="timingsGrid" class="timings-grid"></div>
+
+                <div class="section-divider">📸 Media & Details</div>
+
+                <div class="form-group">
+                    <label class="form-label">Shop Image</label>
+                    <input type="file" id="shopImage" accept="image/*" class="form-input"
+                        onchange="previewImage(this)" />
+                    <img id="imagePreview" class="image-preview" alt="Preview" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Extra Details / Description</label>
+                    <textarea id="shopExtra" class="form-input" rows="3"
+                        placeholder="Services offered, specialities, any extra information..." maxlength="300"
+                        oninput="updateCharCount(this,'extraCount',300)"></textarea>
+                    <div class="char-count" id="extraCount">0/300</div>
+                </div>
+
+                <div id="formError" class="error-msg hidden" style="margin-bottom:14px;"></div>
+
+                <button class="primary-btn" onclick="submitShop()" id="submitBtn">
+                    <span id="submitBtnText">✅ Add Shop</span>
+                    <span id="submitBtnLoader" class="btn-loader hidden">⏳ Adding...</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SUPABASE_URL: 'YOUR_SUPABASE_URL',
+            SUPABASE_KEY: 'YOUR_SUPABASE_ANON_KEY',
+            ADMIN_PASSWORD: 'nammaooru@admin',
+            DEMO_MODE: true
+        };
+
+        const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const FULL_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        let sb = null;
+        let detectedLat = null, detectedLng = null;
+        let miniMap = null;
+
+        function initSupabase() {
+            if (CONFIG.DEMO_MODE) return null;
+            try { return supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY); } catch (e) { return null; }
+        }
+
+        /* ====== TIMINGS GRID ====== */
+        function buildTimingsGrid() {
+            const grid = document.getElementById('timingsGrid');
+            grid.innerHTML = DAYS.map((d, i) => `
+    <div class="timing-row">
+      <span class="timing-day" title="${FULL_DAYS[i]}">${d}</span>
+      <input type="time" id="open_${d}" class="timing-input" value="${d === 'Sun' ? '09:00' : '08:00'}"/>
+      <span class="timing-sep">to</span>
+      <input type="time" id="close_${d}" class="timing-input" value="${d === 'Sun' ? '13:00' : '21:00'}"/>
+      <label class="timing-closed">
+        <input type="checkbox" id="closed_${d}" ${d === 'Sun' ? '' : ''}  onchange="toggleDay('${d}')"/> Closed
+      </label>
+    </div>`).join('');
+        }
+
+        function toggleDay(day) {
+            const isClosed = document.getElementById('closed_' + day).checked;
+            document.getElementById('open_' + day).disabled = isClosed;
+            document.getElementById('close_' + day).disabled = isClosed;
+            document.getElementById('open_' + day).style.opacity = isClosed ? '0.4' : '1';
+            document.getElementById('close_' + day).style.opacity = isClosed ? '0.4' : '1';
+        }
+
+        /* ====== CATEGORY ====== */
+        function checkCustomCat() {
+            const sel = document.getElementById('shopCatSelect').value;
+            document.getElementById('shopCatCustom').classList.toggle('hidden', sel !== 'Other');
+        }
+
+        /* ====== LOCATION ====== */
+        function autoDetectLocation() {
+            const status = document.getElementById('locStatusText');
+            status.textContent = '🔍 Detecting...';
+            navigator.geolocation.getCurrentPosition(pos => {
+                detectedLat = pos.coords.latitude;
+                detectedLng = pos.coords.longitude;
+                document.getElementById('shopLat').value = detectedLat.toFixed(6);
+                document.getElementById('shopLng').value = detectedLng.toFixed(6);
+                status.textContent = `✅ ${detectedLat.toFixed(4)}, ${detectedLng.toFixed(4)}`;
+                showMapPreview(detectedLat, detectedLng);
+            }, err => {
+                status.textContent = '❌ Failed. Use manual entry.';
+            }, { timeout: 8000 });
+        }
+
+        function showManualLocation() {
+            document.getElementById('manualLocWrap').classList.remove('hidden');
+        }
+
+        function showMapPreview(lat, lng) {
+            const preview = document.getElementById('mapPreview');
+            preview.style.display = 'block';
+            if (!miniMap) {
+                miniMap = L.map('mapPreview').setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(miniMap);
+            } else {
+                miniMap.setView([lat, lng], 15);
+            }
+            L.marker([lat, lng]).addTo(miniMap).bindPopup('Shop location').openPopup();
+        }
+
+        /* ====== IMAGE PREVIEW ====== */
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        /* ====== PROGRESS ====== */
+        function updateProgress() {
+            const fields = ['shopName', 'shopPhone', 'shopCatSelect', 'shopAddress'];
+            const filled = fields.filter(id => {
+                const el = document.getElementById(id);
+                return el && el.value.trim();
+            }).length;
+            const pct = 10 + (filled / fields.length) * 85;
+            document.getElementById('progressFill').style.width = pct + '%';
+        }
+
+        function updateCharCount(el, countId, max) {
+            document.getElementById(countId).textContent = el.value.length + '/' + max;
+        }
+
+        /* ====== FORMAT TIME ====== */
+        function fmtTime(t24) {
+            const [h, m] = t24.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            return `${h % 12 || 12}:${String(m).padStart(2, '0')}${ampm}`;
+        }
+
+        /* ====== SUBMIT ====== */
+        async function submitShop() {
+            const name = document.getElementById('shopName').value.trim();
+            const catSel = document.getElementById('shopCatSelect').value;
+            const catCustom = document.getElementById('shopCatCustom').value.trim();
+            const category = catSel === 'Other' ? catCustom : catSel;
+            const phone = document.getElementById('shopPhone').value.trim();
+            const address = document.getElementById('shopAddress').value.trim();
+            const extra = document.getElementById('shopExtra').value.trim();
+            const lat = parseFloat(document.getElementById('shopLat').value) || null;
+            const lng = parseFloat(document.getElementById('shopLng').value) || null;
+            const errEl = document.getElementById('formError');
+
+            errEl.classList.add('hidden');
+
+            // Validate
+            const errors = [];
+            if (!name) errors.push('Shop name is required.');
+            if (!category) errors.push('Please select a category.');
+            if (!phone) errors.push('Phone number is required.');
+            else if (!/^\d{10}$/.test(phone)) errors.push('Phone must be 10 digits.');
+            if (!address) errors.push('Address is required.');
+
+            if (errors.length) {
+                errEl.textContent = errors.join(' ');
+                errEl.classList.remove('hidden');
+                errEl.scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            // Collect timings
+            const timings = {};
+            DAYS.forEach(d => {
+                if (document.getElementById('closed_' + d)?.checked) {
+                    timings[d] = 'Closed';
+                } else {
+                    const o = document.getElementById('open_' + d)?.value;
+                    const c = document.getElementById('close_' + d)?.value;
+                    if (o && c) timings[d] = `${fmtTime(o)}–${fmtTime(c)}`;
+                }
+            });
+
+            const shopData = { name, category, phone, address, extra, timings, lat, lng };
+
+            // Set loading
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtnText').classList.add('hidden');
+            document.getElementById('submitBtnLoader').classList.remove('hidden');
+            document.getElementById('progressFill').style.width = '95%';
+
+            try {
+                if (!CONFIG.DEMO_MODE && sb) {
+                    // Upload image
+                    const fileInput = document.getElementById('shopImage');
+                    if (fileInput.files[0]) {
+                        const file = fileInput.files[0];
+                        const filePath = `shops/${Date.now()}_${file.name.replace(/\s/g, '_')}`;
+                        const { data: uploaded, error: uploadErr } = await sb.storage.from('shop-images').upload(filePath, file);
+                        if (!uploadErr && uploaded) {
+                            const { data: urlData } = sb.storage.from('shop-images').getPublicUrl(filePath);
+                            shopData.image_url = urlData.publicUrl;
+                        }
+                    }
+                    const { error } = await sb.from('shops').insert(shopData);
+                    if (error) throw error;
+                }
+                // Success
+                document.getElementById('progressFill').style.width = '100%';
+                setTimeout(() => {
+                    document.getElementById('theForm').classList.add('hidden');
+                    document.getElementById('successState').classList.remove('hidden');
+                }, 400);
+            } catch (e) {
+                errEl.textContent = 'Error: ' + (e.message || 'Failed to add shop.');
+                errEl.classList.remove('hidden');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitBtnText').classList.remove('hidden');
+                document.getElementById('submitBtnLoader').classList.add('hidden');
+                document.getElementById('progressFill').style.width = '75%';
+            }
+        }
+
+        /* ====== RESET ====== */
+        function resetForm() {
+            document.getElementById('successState').classList.add('hidden');
+            document.getElementById('theForm').classList.remove('hidden');
+            document.getElementById('progressFill').style.width = '10%';
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtnText').classList.remove('hidden');
+            document.getElementById('submitBtnLoader').classList.add('hidden');
+            document.getElementById('formError').classList.add('hidden');
+            document.getElementById('shopName').value = '';
+            document.getElementById('shopPhone').value = '';
+            document.getElementById('shopCatSelect').value = '';
+            document.getElementById('shopCatCustom').value = '';
+            document.getElementById('shopAddress').value = '';
+            document.getElementById('shopExtra').value = '';
+            document.getElementById('shopLat').value = '';
+            document.getElementById('shopLng').value = '';
+            document.getElementById('locStatusText').textContent = 'Not set';
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('shopImage').value = '';
+            document.getElementById('mapPreview').style.display = 'none';
+            document.getElementById('nameCount').textContent = '0/80';
+            document.getElementById('addrCount').textContent = '0/200';
+            document.getElementById('extraCount').textContent = '0/300';
+            document.getElementById('shopCatCustom').classList.add('hidden');
+            document.getElementById('manualLocWrap').classList.add('hidden');
+            miniMap = null;
+            buildTimingsGrid();
+        }
+
+        /* ====== BOOT ====== */
+        window.addEventListener('DOMContentLoaded', () => {
+            sb = initSupabase();
+            buildTimingsGrid();
+        });
+    </script>
+</body>
+
+</html>

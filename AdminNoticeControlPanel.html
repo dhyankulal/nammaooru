@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Notice Control Panel (Demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .notice-card {
+            transition: transform 0.2s;
+        }
+
+        .notice-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 min-h-screen text-slate-900">
+
+    <div id="app" class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">Project Demo Dashboard</h1>
+                <p class="text-slate-500">Notice Management System (No Auth Mode)</p>
+            </div>
+            <div id="connection-status"
+                class="bg-white px-4 py-2 rounded-full shadow-sm border border-slate-200 text-xs font-medium text-slate-600 self-start flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                <span>Firestore Connected</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Sidebar: Add Notice Form -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-8">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14" />
+                            <path d="M12 5v14" />
+                        </svg>
+                        New Notice
+                    </h2>
+
+                    <form id="notice-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Notice Name</label>
+                            <input type="text" id="notice-name" required placeholder="Maintenance Alert"
+                                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Type of Notice</label>
+                            <select id="notice-type"
+                                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <option value="information">Information</option>
+                                <option value="update">Update</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Message Detail</label>
+                            <textarea id="notice-text" rows="5" required placeholder="Enter notice content here..."
+                                class="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                        </div>
+
+                        <div class="flex items-center gap-3 py-2">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="notice-official" class="sr-only peer">
+                                <div
+                                    class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600">
+                                </div>
+                                <span class="ms-3 text-sm font-medium text-slate-700">Official Status (Yes)</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" id="submit-btn"
+                            class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-lg transition-colors shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
+                            <span>Post Notice</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Main Content: Notice List -->
+            <div class="lg:col-span-2">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-slate-800">Live Notice Board</h2>
+                    <span id="notice-count"
+                        class="bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-full uppercase">0
+                        Notices</span>
+                </div>
+
+                <div id="notices-container"
+                    class="space-y-4 custom-scrollbar max-h-[calc(100vh-250px)] overflow-y-auto pr-2">
+                    <div id="loading-state" class="space-y-4">
+                        <div class="animate-pulse bg-white border border-slate-200 rounded-xl p-5 h-32"></div>
+                        <div class="animate-pulse bg-white border border-slate-200 rounded-xl p-5 h-32"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Project Demo Credentials
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUdFHWDuwpQRB89Q_HxzZUP5VwEq9TAy4",
+            authDomain: "nammaooru-f9cc0.firebaseapp.com",
+            projectId: "nammaooru-f9cc0",
+            storageBucket: "nammaooru-f9cc0.firebasestorage.app",
+            messagingSenderId: "5579718926",
+            appId: "1:5579718926:web:f37e3569f414e860b0d75f",
+            measurementId: "G-CP97QELYMS"
+        };
+
+        const noticesContainer = document.getElementById('notices-container');
+        const noticeForm = document.getElementById('notice-form');
+        const countEl = document.getElementById('notice-count');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Updated path to point directly to a root 'notices' collection
+        const noticesPath = collection(db, 'notices');
+
+        /**
+         * Real-time Data Listener
+         */
+        function startDataListener() {
+            onSnapshot(noticesPath, (snapshot) => {
+                const notices = [];
+                snapshot.forEach(doc => notices.push({ id: doc.id, ...doc.data() }));
+
+                // Sort in memory for demo
+                notices.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+                renderNotices(notices);
+                countEl.innerText = `${notices.length} NOTICES`;
+            }, (err) => {
+                console.error("Firestore Sync Error:", err);
+                noticesContainer.innerHTML = `
+                    <div class="p-6 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                        <strong>Database Error:</strong> Ensure your Firestore Security Rules allow public read/write for the 'notices' collection.
+                    </div>
+                `;
+            });
+        }
+
+        function renderNotices(notices) {
+            if (notices.length === 0) {
+                noticesContainer.innerHTML = `<div class="bg-white border p-12 text-center rounded-xl text-slate-400 italic">No notices posted.</div>`;
+                return;
+            }
+            noticesContainer.innerHTML = notices.map(n => {
+                const date = n.timestamp?.toDate().toLocaleString() || 'New';
+                const colors = {
+                    urgent: 'bg-red-50 text-red-600',
+                    update: 'bg-blue-50 text-blue-600',
+                    information: 'bg-emerald-50 text-emerald-600'
+                };
+
+                return `
+                    <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                        <div class="flex justify-between mb-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${colors[n.type] || colors.information}">${n.type}</span>
+                            <button onclick="window.deleteNotice('${n.id}')" class="text-slate-300 hover:text-red-500 transition-colors">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                        <h3 class="font-bold text-slate-900">${n.name}</h3>
+                        <p class="text-slate-600 text-sm mt-2">${n.text}</p>
+                        <div class="mt-4 pt-3 border-t text-[10px] text-slate-400 flex justify-between">
+                            <span>${date}</span>
+                            ${n.statusOfficial ? '<span class="text-blue-500 font-bold">OFFICIAL DEMO POST</span>' : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Global Delete function
+        window.deleteNotice = async (id) => {
+            try {
+                await deleteDoc(doc(db, 'notices', id));
+            } catch (e) {
+                console.error("Delete failed:", e);
+            }
+        };
+
+        // Post Notice function
+        noticeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+
+            try {
+                await addDoc(noticesPath, {
+                    name: document.getElementById('notice-name').value,
+                    type: document.getElementById('notice-type').value,
+                    text: document.getElementById('notice-text').value,
+                    statusOfficial: document.getElementById('notice-official').checked,
+                    timestamp: Timestamp.now()
+                });
+                noticeForm.reset();
+            } catch (err) {
+                console.error("Submission failed:", err);
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Initialize listener immediately
+        startDataListener();
+
+    </script>
+</body>
+
+</html>

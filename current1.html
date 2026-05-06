@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Namma Ooru – Shop Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #dedee5ea;
+            --surface: #f7f7fb;
+            --card: #f8f8fd;
+            --border: #eaebdf;
+            --accent: #FF6B2B;
+            --accent2: #FFB347;
+            --text: #F0EEF8;
+            --muted: #7A788E;
+            --green: #34D399;
+            --blue: #60A5FA;
+            --pink: #F472B6;
+            --yellow: #FBBF24;
+            --r: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── NOISE TEXTURE OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+            opacity: .5;
+        }
+
+        /* ── HEADER ── */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(93, 75, 75, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 20px;
+        }
+
+        .hdr-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 20px rgba(255, 107, 43, .4);
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #FF6B2B, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 500;
+            margin-top: -2px;
+            letter-spacing: .5px;
+        }
+
+        .hdr-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-chip span {
+            color: var(--accent);
+            font-size: 14px;
+        }
+
+        .live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 8px var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: .4
+            }
+        }
+
+        /* ── SEARCH + FILTER BAR ── */
+        .controls {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-wrap {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        #searchInput {
+            width: 100%;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            padding: 13px 16px 13px 46px;
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        #searchInput::placeholder {
+            color: var(--muted);
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 107, 43, .15);
+        }
+
+        /* ── FILTER PILLS ── */
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            border: 1.5px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            border-radius: 30px;
+            padding: 7px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all .18s;
+            letter-spacing: .3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .pill:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .pill.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(255, 107, 43, .35);
+        }
+
+        /* ── RESULTS BAR ── */
+        .results-bar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
+        }
+
+        .results-count {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .results-count strong {
+            color: var(--text);
+        }
+
+        .sort-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        #sortSelect {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* ── GRID ── */
+        .grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 20px 60px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── SHOP CARD ── */
+        .card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+            transition: transform .2s, border-color .2s, box-shadow .2s;
+            animation: fadeUp .35s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 40px rgba(255, 107, 43, .18);
+        }
+
+        /* card image */
+        .card-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            display: block;
+            background: #13131a;
+        }
+
+        .card-img-placeholder {
+            width: 100%;
+            height: 140px;
+            background: linear-gradient(135deg, #1a1a24, #22222e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        /* card body */
+        .card-body {
+            padding: 14px 16px 16px;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .card-name {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .type-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .4px;
+            padding: 4px 9px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .card-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .card-detail-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .card-detail-text {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        /* phone chip */
+        .phone-chip {
+            margin-top: 12px;
+            background: rgba(255, 107, 43, .08);
+            border: 1px solid rgba(255, 107, 43, .2);
+            border-radius: 8px;
+            padding: 9px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .phone-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: .5px;
+            text-transform: uppercase;
+        }
+
+        .phone-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+
+        .reveal-btn {
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: background .15s;
+            white-space: nowrap;
+        }
+
+        .reveal-btn:hover {
+            background: #e05a1a;
+        }
+
+        .reveal-btn.revealed {
+            background: var(--surface);
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+
+        /* ── TYPE COLORS ── */
+        .badge-medical {
+            background: rgba(96, 165, 250, .15);
+            color: #60A5FA;
+        }
+
+        .badge-grocery {
+            background: rgba(52, 211, 153, .15);
+            color: #34D399;
+        }
+
+        .badge-hardware {
+            background: rgba(251, 191, 36, .15);
+            color: #FBBF24;
+        }
+
+        .badge-hotel {
+            background: rgba(244, 114, 182, .15);
+            color: #F472B6;
+        }
+
+        .badge-electrical {
+            background: rgba(167, 139, 250, .15);
+            color: #A78BFA;
+        }
+
+        .badge-plumber {
+            background: rgba(45, 212, 191, .15);
+            color: #2DD4BF;
+        }
+
+        .badge-mechanic {
+            background: rgba(249, 115, 22, .15);
+            color: #F97316;
+        }
+
+        .badge-salon {
+            background: rgba(236, 72, 153, .15);
+            color: #EC4899;
+        }
+
+        .badge-dairy {
+            background: rgba(250, 204, 21, .15);
+            color: #FACC15;
+        }
+
+        .badge-tailoring {
+            background: rgba(139, 92, 246, .15);
+            color: #8B5CF6;
+        }
+
+        .badge-vegetable {
+            background: rgba(74, 222, 128, .15);
+            color: #4ADE80;
+        }
+
+        .badge-labour {
+            background: rgba(148, 163, 184, .15);
+            color: #94A3B8;
+        }
+
+        .badge-other {
+            background: rgba(100, 116, 139, .15);
+            color: #64748B;
+        }
+
+        /* ── LOADING / EMPTY ── */
+        .state-box {
+            grid-column: 1/-1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            gap: 16px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        .state-box .state-icon {
+            font-size: 56px;
+            margin-bottom: 8px;
+        }
+
+        .state-box p {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .state-box small {
+            font-size: 13px;
+            opacity: .7;
+        }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0
+            }
+
+            100% {
+                background-position: -200% 0
+            }
+        }
+
+        .skel-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--r);
+            overflow: hidden;
+        }
+
+        .skel-img {
+            height: 140px;
+            background: linear-gradient(90deg, #18181f 25%, #22222e 50%, #18181f 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+
+        .skel-body {
+            padding: 14px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .skel-line {
+            height: 12px;
+            border-radius: 6px;
+        }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #232330;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 11px 22px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 999;
+            transition: transform .3s, opacity .3s;
+            opacity: 0;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:520px) {
+            .hdr-inner {
+                height: auto;
+                padding: 12px 0;
+                flex-wrap: nowrap;
+            }
+
+            .stat-chip.hide-mobile {
+                display: none;
+            }
+
+            .grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding: 14px 12px 50px;
+            }
+
+            .card-img,
+            .card-img-placeholder {
+                height: 100px;
+            }
+
+            .card-name {
+                font-size: 13px;
+            }
+
+            .phone-val {
+                font-size: 13px;
+            }
+        }
+
+        @media(max-width:380px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── NOTICE BOARD STRIP ── */
+        #notice-strip {
+            background: rgba(179, 174, 170, 0.97);
+            border-top: 1px solid var(--border);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.35s ease;
+        }
+
+        #notice-strip.open {
+            max-height: 320px;
+        }
+
+        .notice-strip-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            overflow-y: auto;
+            max-height: 300px;
+        }
+
+        .notice-strip-inner::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notice-strip-inner::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .notice-strip-inner::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .nb-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nb-row:last-child {
+            border-bottom: none;
+        }
+
+        .nb-badge {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .nb-badge-urgent {
+            background: rgba(239, 68, 68, .15);
+            color: #F87171;
+        }
+
+        .nb-badge-update {
+            background: rgba(96, 165, 250, .15);
+            color: #60A5FA;
+        }
+
+        .nb-badge-information {
+            background: rgba(4, 233, 149, 0.15);
+            color: #2def01;
+        }
+
+        .nb-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .nb-text {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+            margin-top: 2px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        .nb-meta {
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 4px;
+            opacity: .6;
+        }
+
+        .nb-official {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: .4px;
+        }
+
+        .nb-empty {
+            text-align: center;
+            padding: 24px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        /* toggle button in header */
+        #nb-toggle {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color .18s, color .18s;
+            white-space: nowrap;
+        }
+
+        #nb-toggle:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        #nb-toggle.has-notices {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #nb-count-badge {
+            background: var(--accent);
+            color: #fff;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 1px 6px;
+            display: none;
+        }
+
+        /* ── LANGUAGE TOGGLE ── */
+        #lang-toggle {
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            padding: 0;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .lang-opt {
+            padding: 6px 11px;
+            cursor: pointer;
+            transition: background .15s, color .15s;
+            border-radius: 18px;
+            letter-spacing: .3px;
+            user-select: none;
+            color: var(--muted);
+        }
+
+        .lang-opt.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        /* ── REVEAL LIMIT BANNER ── */
+        #reveal-limit-banner {
+            display: none;
+            background: rgba(251, 191, 36, .1);
+            border-bottom: 1px solid rgba(251, 191, 36, .3);
+            color: var(--yellow);
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+            padding: 9px 16px;
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="hdr-inner">
+            <div class="logo">
+                <div class="logo-icon">🏘️</div>
+                <div>
+                    <div class="logo-text">Namma Ooru</div>
+                    <div class="logo-sub">ನಮ್ಮ ಊರು · LOCAL SHOPS</div>
+                </div>
+            </div>
+            <div class="hdr-right">
+                <div class="stat-chip hide-mobile">
+                    <div class="live-dot"></div> <span data-i18n="live">Live</span>
+                </div>
+                <div class="stat-chip">
+                    <span id="totalCount">—</span> <span data-i18n="shops">shops</span>
+                </div>
+                <button id="nb-toggle" onclick="toggleNoticeBoard()" title="Toggle Notice Board">
+                    📋 <span data-i18n="notices">Notices</span>
+                    <span id="nb-count-badge">0</span>
+                </button>
+                <div id="lang-toggle">
+                    <span class="lang-opt active" data-lang="en" onclick="setLang('en')">EN</span>
+                    <span class="lang-opt" data-lang="kn" onclick="setLang('kn')">ಕನ್ನಡ</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- REVEAL LIMIT BANNER -->
+        <div id="reveal-limit-banner"></div>
+
+        <!-- NOTICE BOARD STRIP -->
+        <div id="notice-strip">
+            <div class="notice-strip-inner" id="nb-list">
+                <div class="nb-empty" data-i18n="noticesLoading">Loading notices…</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <!-- Search -->
+        <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search shops by name, type, address…"
+                data-i18n-placeholder="searchPlaceholder" />
+        </div>
+
+        <!-- Category filter pills -->
+        <div class="filter-row" id="filterRow">
+            <button class="pill active" data-filter="all" onclick="setFilter('all')" data-i18n-inner="allShops">🏪
+                All</button>
+            <!-- pills injected by JS -->
+        </div>
+    </div>
+
+    <!-- RESULTS BAR -->
+    <div class="results-bar">
+        <div class="results-count" id="resultsCount"><span data-i18n="loading">Loading…</span></div>
+        <div class="sort-wrap">
+            <span class="sort-label" data-i18n="sort">Sort:</span>
+            <select id="sortSelect" onchange="applySort()">
+                <option value="name-asc">A → Z</option>
+                <option value="name-desc">Z → A</option>
+                <option value="type">By Type</option>
+                <option value="newest">Newest First</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="grid" id="grid">
+        <!-- Skeleton placeholders -->
+        ${Array(6).fill(0).map(()=>`
+        <div class="skel-card">
+            <div class="skel-img"></div>
+            <div class="skel-body">
+                <div class="skeleton skel-line" style="width:70%"></div>
+                <div class="skeleton skel-line" style="width:45%"></div>
+                <div class="skeleton skel-line" style="width:90%;height:36px;border-radius:8px;margin-top:4px;"></div>
+            </div>
+        </div>`).join('')}
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"></div>
+
+
+    <!-- LANGUAGE / i18n ENGINE -->
+    <script>
+        window._lang = localStorage.getItem('lang') || 'en';
+
+        const I18N = {
+            en: {
+                live: 'Live',
+                shops: 'shops',
+                notices: 'Notices',
+                loading: 'Loading…',
+                sort: 'Sort:',
+                searchPlaceholder: 'Search shops by name, type, address…',
+                allShops: '🏪 All',
+                logoSub: 'ನಮ್ಮ ಊರು · LOCAL SHOPS',
+                noNotices: 'No announcements at this time.',
+                noticesError: 'Could not load notices.',
+                noticesLoading: 'Loading notices…',
+                nameAsc: 'A → Z',
+                nameDesc: 'Z → A',
+                byType: 'By Type',
+                newest: 'Newest First',
+            },
+            kn: {
+                live: 'ನೇರ',
+                shops: 'ಅಂಗಡಿಗಳು',
+                notices: 'ಸೂಚನೆಗಳು',
+                loading: 'ಲೋಡ್ ಆಗುತ್ತಿದೆ…',
+                sort: 'ವಿಂಗಡಿಸು:',
+                searchPlaceholder: 'ಹೆಸರು, ವಿಧ, ವಿಳಾಸದಿಂದ ಹುಡುಕಿ…',
+                allShops: '🏪 ಎಲ್ಲವೂ',
+                logoSub: 'ನಮ್ಮ ಊರು · ಸ್ಥಳೀಯ ಅಂಗಡಿಗಳು',
+                noNotices: 'ಇದೀಗ ಯಾವುದೇ ಸೂಚನೆ ಇಲ್ಲ.',
+                noticesError: 'ಸೂಚನೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ.',
+                noticesLoading: 'ಸೂಚನೆಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…',
+                nameAsc: 'ಅ → ಜ',
+                nameDesc: 'ಜ → ಅ',
+                byType: 'ವಿಧದಿಂದ',
+                newest: 'ಹೊಸದು ಮೊದಲು',
+            }
+        };
+
+        function applyI18n() {
+            const lang = window._lang;
+            const d = I18N[lang];
+
+            // data-i18n spans
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (d[key] !== undefined) el.textContent = d[key];
+            });
+
+            // placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.dataset.i18nPlaceholder;
+                if (d[key] !== undefined) el.placeholder = d[key];
+            });
+
+            // inner html overrides (pills etc)
+            document.querySelectorAll('[data-i18n-inner]').forEach(el => {
+                const key = el.dataset.i18nInner;
+                if (d[key] !== undefined) el.innerHTML = d[key];
+            });
+
+            // sort options
+            const sortSel = document.getElementById('sortSelect');
+            if (sortSel) {
+                const opts = sortSel.options;
+                if (opts[0]) opts[0].text = d.nameAsc;
+                if (opts[1]) opts[1].text = d.nameDesc;
+                if (opts[2]) opts[2].text = d.byType;
+                if (opts[3]) opts[3].text = d.newest;
+            }
+
+            // lang toggle active state
+            document.querySelectorAll('.lang-opt').forEach(el => {
+                el.classList.toggle('active', el.dataset.lang === lang);
+            });
+
+            // re-render grid & banner if data already loaded
+            if (typeof applyAll === 'function') applyAll();
+            if (typeof updateLimitBanner === 'function') updateLimitBanner();
+        }
+
+        window.setLang = function (lang) {
+            window._lang = lang;
+            localStorage.setItem('lang', lang);
+            applyI18n();
+        };
+
+        // Apply on DOM ready
+        document.addEventListener('DOMContentLoaded', applyI18n);
+    </script>
+
+    <!-- NOTICE BOARD SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUdFHWDuwpQRB89Q_HxzZUP5VwEq9TAy4",
+            authDomain: "nammaooru-f9cc0.firebaseapp.com",
+            projectId: "nammaooru-f9cc0",
+            storageBucket: "nammaooru-f9cc0.firebasestorage.app",
+            messagingSenderId: "5579718926",
+            appId: "1:5579718926:web:f37e3569f414e860b0d75f"
+        };
+
+        const app = initializeApp(firebaseConfig, 'notices-app');
+        const db = getFirestore(app);
+
+        const nbList = document.getElementById('nb-list');
+        const nbBadge = document.getElementById('nb-count-badge');
+        const nbToggle = document.getElementById('nb-toggle');
+
+        function badgeColor(type) {
+            if (type === 'urgent') return 'nb-badge-urgent';
+            if (type === 'update') return 'nb-badge-update';
+            return 'nb-badge-information';
+        }
+
+        onSnapshot(collection(db, 'notices'), (snapshot) => {
+            const notices = [];
+            snapshot.forEach(doc => notices.push({ id: doc.id, ...doc.data() }));
+            notices.sort((a, b) => (b.timestamp?.toMillis() || 0) - (a.timestamp?.toMillis() || 0));
+
+            if (notices.length > 0) {
+                nbBadge.textContent = notices.length;
+                nbBadge.style.display = 'inline-block';
+                nbToggle.classList.add('has-notices');
+            } else {
+                nbBadge.style.display = 'none';
+                nbToggle.classList.remove('has-notices');
+            }
+
+            if (!notices.length) {
+                nbList.innerHTML = `<div class="nb-empty">${(I18N[window._lang] || I18N.en).noNotices}</div>`;
+                return;
+            }
+
+            nbList.innerHTML = notices.map(n => {
+                const date = n.timestamp?.toDate().toLocaleString(undefined, {
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                }) || 'Recently';
+                return `
+          <div class="nb-row">
+            <span class="nb-badge ${badgeColor(n.type)}">${n.type || 'info'}</span>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span class="nb-title">${n.name || ''}</span>
+                ${n.statusOfficial ? '<span class="nb-official">✓ Official</span>' : ''}
+              </div>
+              <div class="nb-text">${n.text || ''}</div>
+              <div class="nb-meta">🕐 ${date} · Ref: ${n.id.substring(0, 8)}</div>
+            </div>
+          </div>`;
+            }).join('');
+        }, (err) => {
+            console.error('Notice Board error:', err);
+            nbList.innerHTML = `<div class="nb-empty" style="color:#F87171">${(I18N[window._lang] || I18N.en).noticesError}</div>`;
+        });
+
+        window.toggleNoticeBoard = function () {
+            const strip = document.getElementById('notice-strip');
+            strip.classList.toggle('open');
+        };
+    </script>
+
+    <!-- FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDUdFHWDuwpQRB89Q_HxzZUP5VwEq9TAy4",
+            authDomain: "nammaooru-f9cc0.firebaseapp.com",
+            projectId: "nammaooru-f9cc0",
+            storageBucket: "nammaooru-f9cc0.firebasestorage.app",
+            messagingSenderId: "5579718926",
+            appId: "1:5579718926:web:f37e3569f414e860b0d75f",
+            measurementId: "G-CP97QELYMS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        /* ── LOAD DATA ── */
+        let allShops = [];
+        let activeFilter = 'all';
+        let revealedPhones = new Set();
+
+        async function loadShops() {
+            try {
+                const snap = await getDocs(collection(db, 'shops'));
+                allShops = [];
+                snap.forEach(d => allShops.push({ id: d.id, ...d.data() }));
+                buildFilterPills();
+                applyAll();
+                document.getElementById('totalCount').textContent = allShops.length;
+            } catch (e) {
+                console.error(e);
+                const tErr = window._lang === 'kn';
+                document.getElementById('grid').innerHTML = `
+      <div class="state-box">
+        <div class="state-icon">⚠️</div>
+        <p>${tErr ? 'ಅಂಗಡಿಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಲಿಲ್ಲ' : 'Could not load shops'}</p>
+        <small>${e.message}</small>
+      </div>`;
+            }
+        }
+
+        /* ── FILTER PILLS (from real types in data) ── */
+        const TYPE_ICONS = {
+            medical: '💊', grocery: '🛒', hardware: '🔨', hotel: '🍛',
+            electrical: '⚡', plumber: '🔧', mechanic: '🔩', salon: '✂️',
+            dairy: '🥛', tailoring: '🧵', vegetable: '🥦', labour: '👷', other: '🏪'
+        };
+
+        function buildFilterPills() {
+            const types = [...new Set(allShops.map(s => (s.type || 'other').toLowerCase()))].sort();
+            const row = document.getElementById('filterRow');
+            // keep "All" pill, add the rest
+            types.forEach(t => {
+                const btn = document.createElement('button');
+                btn.className = 'pill';
+                btn.dataset.filter = t;
+                btn.innerHTML = `${TYPE_ICONS[t] || '🏪'} ${cap(t)}`;
+                btn.onclick = () => setFilter(t);
+                row.appendChild(btn);
+            });
+        }
+
+        /* ── FILTER + SEARCH + SORT ── */
+        window.setFilter = function (f) {
+            activeFilter = f;
+            document.querySelectorAll('.pill').forEach(p => p.classList.toggle('active', p.dataset.filter === f));
+            applyAll();
+        };
+
+        window.applySort = applyAll;
+
+        document.getElementById('searchInput').addEventListener('input', applyAll);
+
+        function applyAll() {
+            const q = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sort = document.getElementById('sortSelect').value;
+
+            let list = allShops.filter(s => {
+                const typeMatch = activeFilter === 'all' || (s.type || 'other').toLowerCase() === activeFilter;
+                if (!typeMatch) return false;
+                if (!q) return true;
+                return (s.name || '').toLowerCase().includes(q)
+                    || (s.type || '').toLowerCase().includes(q)
+                    || (s.address || '').toLowerCase().includes(q)
+                    || (s.details || '').toLowerCase().includes(q);
+            });
+
+            if (sort === 'name-asc') list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+            if (sort === 'name-desc') list.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
+            if (sort === 'type') list.sort((a, b) => (a.type || '').localeCompare(b.type || ''));
+            if (sort === 'newest') list.sort((a, b) => {
+                const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                return tb - ta;
+            });
+
+            renderGrid(list);
+        }
+
+        /* ── RENDER ── */
+        function renderGrid(list) {
+            const grid = document.getElementById('grid');
+
+            const t = window._lang === 'kn';
+            document.getElementById('resultsCount').innerHTML = t
+                ? `<strong>${list.length}</strong> /${'&zwj;'} <strong>${allShops.length}</strong> ಅಂಗಡಿಗಳು ತೋರಿಸಲಾಗುತ್ತಿದೆ`
+                : `Showing <strong>${list.length}</strong> of <strong>${allShops.length}</strong> shops`;
+
+            if (!list.length) {
+                const tE = window._lang === 'kn';
+                grid.innerHTML = `
+      <div class="state-box">
+        <div class="state-icon">🔍</div>
+        <p>${tE ? 'ಯಾವುದೇ ಅಂಗಡಿ ಕಂಡುಬಂದಿಲ್ಲ' : 'No shops found'}</p>
+        <small>${tE ? 'ಬೇರೆ ಹುಡುಕಾಟ ಅಥವಾ ಫಿಲ್ಟರ್ ಪ್ರಯತ್ನಿಸಿ' : 'Try a different search or filter'}</small>
+      </div>`;
+                return;
+            }
+
+            grid.innerHTML = list.map((s, i) => {
+                const type = (s.type || 'other').toLowerCase();
+                const icon = TYPE_ICONS[type] || '🏪';
+                const masked = maskPhone(s.phone || '');
+                const isRevd = revealedPhones.has(s.id);
+                const delay = Math.min(i * 40, 400);
+
+                const imgHtml = s.photoBase64
+                    ? `<img class="card-img" src="${s.photoBase64}" alt="${esc(s.name)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+         <div class="card-img-placeholder" style="display:none">${icon}</div>`
+                    : `<div class="card-img-placeholder">${icon}</div>`;
+
+                const t = window._lang === 'kn';
+                const seenToday = hasRevealedToday(s.id);
+                const btnLabel = isRevd ? (t ? 'ಮರೆಮಾಡಿ' : 'Hide') : (t ? 'ತೋರಿಸಿ' : 'Reveal');
+                return `
+    <div class="card" style="animation-delay:${delay}ms" id="card-${s.id}">
+      ${imgHtml}
+      <div class="card-body">
+        <div class="card-top">
+          <div class="card-name">${esc(s.name || '—')}</div>
+          <span class="type-badge badge-${type}">${icon} ${cap(s.type || 'Other')}</span>
+        </div>
+        ${s.address ? `<div class="card-detail"><span class="card-detail-icon">📍</span><span class="card-detail-text">${esc(s.address)}</span></div>` : ''}
+        ${s.details ? `<div class="card-detail"><span class="card-detail-icon">ℹ️</span><span class="card-detail-text">${esc(s.details)}</span></div>` : ''}
+        <div class="phone-chip">
+          <div>
+            <div class="phone-label">📞 ${t ? 'ಸಂಪರ್ಕ' : 'Contact'}</div>
+            <div class="phone-val" id="ph-${s.id}">${isRevd ? esc(s.phone || '—') : masked}</div>
+          </div>
+          <button class="reveal-btn ${isRevd ? 'revealed' : ''}" id="rb-${s.id}"
+            onclick="toggleReveal('${s.id}','${esc(s.phone || '')}')">
+            ${btnLabel}
+          </button>
+        </div>
+      </div>
+    </div>`;
+            }).join('');
+        }
+
+        /* ── MASK PHONE ── */
+        function maskPhone(p) {
+            const clean = p.replace(/\D/g, '');
+            if (!clean) return '—';
+            if (clean.length >= 10) return clean.slice(0, 3) + ' ••• •' + clean.slice(-3);
+            return clean.slice(0, 2) + '•'.repeat(clean.length - 4) + clean.slice(-2);
+        }
+
+        /* ── DAILY REVEAL LIMIT (5/day) ── */
+        const REVEAL_LIMIT = 5;
+        const STORAGE_KEY = 'reveal_log';
+
+        function getTodayKey() {
+            const d = new Date();
+            return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+        }
+
+        function getRevealLog() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return { date: getTodayKey(), ids: [] };
+                const parsed = JSON.parse(raw);
+                if (parsed.date !== getTodayKey()) return { date: getTodayKey(), ids: [] };
+                return parsed;
+            } catch { return { date: getTodayKey(), ids: [] }; }
+        }
+
+        function saveRevealLog(log) {
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(log)); } catch { }
+        }
+
+        function getRevealedToday() { return getRevealLog().ids; }
+
+        function hasRevealedToday(id) { return getRevealLog().ids.includes(id); }
+
+        function recordReveal(id) {
+            const log = getRevealLog();
+            if (!log.ids.includes(id)) { log.ids.push(id); saveRevealLog(log); }
+        }
+
+        function updateLimitBanner() {
+            const used = getRevealLog().ids.length;
+            const remaining = REVEAL_LIMIT - used;
+            const banner = document.getElementById('reveal-limit-banner');
+            const t = window._lang === 'kn';
+            if (remaining <= 0) {
+                banner.style.display = 'block';
+                banner.textContent = t
+                    ? '⚠️ ಇಂದು ನೀವು 5 ಫೋನ್ ನಂಬರ್‌ಗಳನ್ನು ನೋಡಿದ್ದೀರಿ. ನಾಳೆ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.'
+                    : '⚠️ You have viewed 5 phone numbers today. Come back tomorrow!';
+            } else if (remaining <= 2) {
+                banner.style.display = 'block';
+                banner.textContent = t
+                    ? `👁 ಇಂದು ಇನ್ನೂ ${remaining} ಅವಕಾಶ ಉಳಿದಿದೆ.`
+                    : `👁 ${remaining} reveal${remaining === 1 ? '' : 's'} remaining today.`;
+            } else {
+                banner.style.display = 'none';
+            }
+        }
+
+        /* ── REVEAL / HIDE ── */
+        window.toggleReveal = function (id, phone) {
+            const phEl = document.getElementById('ph-' + id);
+            const btn = document.getElementById('rb-' + id);
+            if (!phEl || !btn) return;
+            const t = window._lang === 'kn';
+
+            if (revealedPhones.has(id)) {
+                // Always allow hiding
+                revealedPhones.delete(id);
+                phEl.textContent = maskPhone(phone);
+                btn.textContent = t ? 'ಮರೆಮಾಡಿ' : 'Reveal';
+                btn.classList.remove('revealed');
+                updateLimitBanner();
+            } else {
+                // Check daily limit — only count NEW reveals (not already seen today)
+                const alreadySeen = hasRevealedToday(id);
+                const usedToday = getRevealLog().ids.length;
+
+                if (!alreadySeen && usedToday >= REVEAL_LIMIT) {
+                    const msg = t
+                        ? 'ಇಂದು 5 ನಂಬರ್‌ಗಳ ಮಿತಿ ತಲುಪಿದೆ. ನಾಳೆ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ!'
+                        : 'Daily limit reached! You can reveal 5 numbers per day.';
+                    showToast('🚫 ' + msg);
+                    updateLimitBanner();
+                    return;
+                }
+
+                revealedPhones.add(id);
+                if (!alreadySeen) recordReveal(id);
+                phEl.textContent = phone || '—';
+                btn.textContent = t ? 'ಮರೆಮಾಡಿ' : 'Hide';
+                btn.classList.add('revealed');
+                showToast('📞 ' + phone);
+                updateLimitBanner();
+            }
+        };
+
+        /* ── HELPERS ── */
+        function cap(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+        function esc(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        window.showToast = function (msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(window._tt);
+            window._tt = setTimeout(() => t.classList.remove('show'), 2400);
+        };
+
+        /* ── KICK OFF ── */
+        loadShops();
+        updateLimitBanner();
+    </script>
+</body>
+
+</html>
